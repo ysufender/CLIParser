@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cctype>
 #include <unordered_map>
 #include <sstream>
@@ -30,12 +32,13 @@ class Flags
 	
 	public:
 		void SetUp(dict<string, void*> flagsToSet, dict<string, FlagType> flagTypesToSet);
-		bool GetFlagBool(string flagName);
-		int GetFlagInt(string flagName);
-		float GetFlagFloat(string flagName);
-		string GetFlagString(string flagName);
-		template<typename T>
-		vector<T> GetFlagList(string flagName);
+		bool GetBool(string flagName);
+		int GetInt(string flagName);
+		float GetFloat(string flagName);
+		string GetString(string flagName);
+		vector<string> GetStringList(string flagName);
+		vector<int> GetIntList(string flagName);
+		vector<float> GetFloatList(string flagName);
 };
 
 class CLIParser : Flags

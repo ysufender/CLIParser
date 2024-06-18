@@ -11,7 +11,7 @@ void Flags::SetUp(dict<string, void*> flagsToSet, dict<string, FlagType> flagTyp
 	//}
 }
 
-bool Flags::GetFlagBool(string flagName)
+bool Flags::GetBool(string flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Bool)
@@ -26,7 +26,7 @@ bool Flags::GetFlagBool(string flagName)
 	return *static_cast<bool*>(flags[flagName]);
 }
 
-int Flags::GetFlagInt(string flagName)
+int Flags::GetInt(string flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Int)
@@ -42,7 +42,7 @@ int Flags::GetFlagInt(string flagName)
     	return *static_cast<int*>(flags[flagName]);
 }
 
-float Flags::GetFlagFloat(string flagName)
+float Flags::GetFloat(string flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Float)
@@ -57,7 +57,7 @@ float Flags::GetFlagFloat(string flagName)
 	return *static_cast<float*>(flags[flagName]);
 }
 
-string Flags::GetFlagString(string flagName)
+string Flags::GetString(string flagName)
 {
 	flagName.insert(0, 1, '-');
     	if (flagTypes[flagName] != FlagType::String)
@@ -73,23 +73,52 @@ string Flags::GetFlagString(string flagName)
     	return *static_cast<string*>(flags[flagName]);
 }
 
-template<typename T>
-vector<T> Flags::GetFlagList(string flagName)
+vector<string> Flags::GetStringList(string flagName)
 {
 	flagName.insert(0, 1, '-');
-    	if (flagTypes[flagName] != FlagType::FloatList &&
-		flagTypes[flagName] != FlagType::IntList &&
-		flagTypes[flagName] != FlagType::StringList)
+    	if (flagTypes[flagName] != FlagType::StringList)
     	{
         	// Handle Error
-        	return vector<T>();
+        	return vector<string>();
     	}
 		
 		
 	if (flags[flagName] == nullptr)
-		return vector<T>();
+		return vector<string>();
     
-    	return *static_cast<vector<T>*>(flags[flagName]);
+    	return *static_cast<vector<string>*>(flags[flagName]);
+}
+
+vector<int> Flags::GetIntList(string flagName)
+{
+	flagName.insert(0, 1, '-');
+    	if (flagTypes[flagName] != FlagType::IntList)
+    	{
+        	// Handle Error
+        	return vector<int>();
+    	}
+		
+		
+	if (flags[flagName] == nullptr)
+		return vector<int>();
+    
+    	return *static_cast<vector<int>*>(flags[flagName]);
+}
+
+vector<float> Flags::GetFloatList(string flagName)
+{
+	flagName.insert(0, 1, '-');
+    	if (flagTypes[flagName] != FlagType::FloatList)
+    	{
+        	// Handle Error
+        	return vector<float>();
+    	}
+		
+		
+	if (flags[flagName] == nullptr)
+		return vector<float>();
+    
+    	return *static_cast<vector<float>*>(flags[flagName]);
 }
 
 CLIParser::CLIParser(char** cliInputsOfTheCaller, int count)
@@ -358,27 +387,4 @@ bool* CLIParser::HandleCliBool(int index)
 	return new bool(true);
 }
 
-#ifdef DEBUG
-int main(int argc, char** args)
-{	
-	CLIParser parser { args, argc };
-	parser.AddFlag("sl", FlagType::StringList);
-	parser.AddFlag("il", FlagType::IntList);
-	parser.AddFlag("fl", FlagType::FloatList);
-	Flags flags = parser.Parse();
-	
-	for (auto& it: flags.GetFlagList<string>("sl")) {
-		std::cout << "sl: " << it << "\n";
-	}
 
-	for (auto& it: flags.GetFlagList<int>("il")) {
-		std::cout << "il: " << it << "\n";
-	}
-
-	for (auto& it: flags.GetFlagList<float>("fl")) {
-		std::cout << "fl: " << it << "\n";
-	}
-	
-	return 1;
-}
-#endif
