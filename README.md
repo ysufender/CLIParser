@@ -168,17 +168,17 @@ So `[4,4,3]`, `[ List ]`, `[5,4 , 3]` will cause you trouble.
 
 ## NFAQ (Not so Frequently Asked Questions)
 
-Q: Can I do "[ 5, ]" for an integer list?
+Q: Can I do "[ 5, ]" for an integer list?\
 A: For God's sake NO!
 
-Q: How are you able to think of a solution that is soooo ugly?
+Q: How are you able to think of a solution that is soooo ugly?\
 A: Natural talent.
 
-Q: Will you create more ugly things like this?
+Q: Will you create more ugly things like this?\
 A: Absolutely YES!
 
-Q: Has anyone ever saw your  codes and gave their opinion?
+Q: Has anyone ever saw your  codes and gave their opinion?\
 A: Absolutely NO!
 
-Q: Why are you writing these docs and readmes that no one will read?
+Q: Why are you writing these docs and readmes that no one will read?\
 A: One day, I was sleeping. But Jesus, what a sleep! Then a pigeon came and said "You shall write thy docs and readmes". That day I started to write them.
