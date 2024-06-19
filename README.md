@@ -128,7 +128,7 @@ Yeah that's all to it.
 
   
 
-> Note: There is a define or an alias statement (I can't remember which) for std::string. That's why I'm using string directly. That might be a bad idea though. Maybe I'll change it later.
+> Note: There is a define or a using statement (I can't remember which) for std::string. That's why I'm using string directly. That might be a bad idea though. Maybe I'll change it later.
 
 >
 
