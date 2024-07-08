@@ -19,3 +19,5 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 else()
     add_library(CLIParser STATIC CLIParser.cpp)
 endif()
+
+target_include_directories(CLIParser PUBLIC .)
