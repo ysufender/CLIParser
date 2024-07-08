@@ -1,7 +1,2 @@
-g++ -std=c++20 -static-libstdc++ -DDEBUG -o CLIParser.exe CLIParser.cpp debug.cpp -I .
-
-if (-not (Test-Path -Path build/)) { mkdir build }
-if (-not (Test-Path -Path build/Debug)) { mkdir build/Debug }
-
-Move-Item -Force -Path CLIParser.exe -Destination build/Debug/
-Copy-Item -Force -Path CLIParser.hpp -Destination build/Debug/
+cmake -S . -B build -G Ninja -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --config Debug

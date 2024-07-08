@@ -12,13 +12,13 @@ then you can either use
 
 `./build.ps1`
 
-and create an executable named `CLIParser.exe` at `build/Debug` to try it out by using `debug.cpp`
+and create an executable named `CLIParser.exe`
 
 or you can do
 
 `./publish.ps1`
 
-and create the static library `libCLIParser.a` and `CLIParser.hpp` at `build/Release`. It also copies them to a directory named `test`. That's all. Thanks.
+and create the static library `libCLIParser.a`
 
 ## Adding/Removing Flags
 
