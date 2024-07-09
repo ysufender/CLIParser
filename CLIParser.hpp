@@ -7,9 +7,9 @@
 #include <vector>
 #include <iostream>
 
-#define vector std::vector
-#define dict std::unordered_map
-#define string std::string
+#define vector_t std::vector
+#define dict_t std::unordered_map
+#define string_t std::string
 
 enum class FlagType
 {
@@ -27,42 +27,42 @@ class Flags
 	friend class CLIParser;
 
 	private:
-		dict<string, void*> flags;
-		dict<string, FlagType> flagTypes;
+		dict_t<string_t, void*> flags;
+		dict_t<string_t, FlagType> flagTypes;
 	
 	public:
-		void SetUp(dict<string, void*> flagsToSet, dict<string, FlagType> flagTypesToSet);
-		bool GetBool(string flagName);
-		int GetInt(string flagName);
-		float GetFloat(string flagName);
-		string GetString(string flagName);
-		vector<string> GetStringList(string flagName);
-		vector<int> GetIntList(string flagName);
-		vector<float> GetFloatList(string flagName);
+		void SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet);
+		bool GetBool(string_t flagName);
+		int GetInt(string_t flagName);
+		float GetFloat(string_t flagName);
+		string_t GetString(string_t flagName);
+		vector_t<string_t> GetStringList(string_t flagName);
+		vector_t<int> GetIntList(string_t flagName);
+		vector_t<float> GetFloatList(string_t flagName);
 };
 
 class CLIParser : Flags
 {
 	private:
-		dict<string, void*> resultFlags;
-		dict<string, FlagType> flagsAndTypes;
+		dict_t<string_t, void*> resultFlags;
+		dict_t<string_t, FlagType> flagsAndTypes;
 		char** cliEntries;
 		int entryCount;
 	
 	public:
 		CLIParser(char** cliInputsOfTheCaller, int count);
-		void AddFlag(string flagName, FlagType flagType);
-		void RemoveFlag(string flagName);
+		void AddFlag(string_t flagName, FlagType flagType);
+		void RemoveFlag(string_t flagName);
 		Flags Parse();
 
 	private:
 		void HandleFlagEntry(int index);
 		void* CLIParamToObject(int index);
 		void* HandleCliList(int index);
-		vector<int>* HandleIntList(int index);
-		vector<float>* HandleFloatList(int index);
-		vector<string>* HandleStringList(int index);
+		vector_t<int>* HandleIntList(int index);
+		vector_t<float>* HandleFloatList(int index);
+		vector_t<string_t>* HandleStringList(int index);
 		void* HandleCliNumber(int index);
-		string* HandleCliString(int index);
+		string_t* HandleCliString(int index);
 		bool* HandleCliBool(int index);
 };

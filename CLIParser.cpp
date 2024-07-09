@@ -1,6 +1,6 @@
 #include "CLIParser.hpp"
 
-void Flags::SetUp(dict<string, void*> flagsToSet, dict<string, FlagType> flagTypesToSet)
+void Flags::SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet)
 {
 	flags = flagsToSet;
 	flagTypes = flagTypesToSet;
@@ -11,7 +11,7 @@ void Flags::SetUp(dict<string, void*> flagsToSet, dict<string, FlagType> flagTyp
 	//}
 }
 
-bool Flags::GetBool(string flagName)
+bool Flags::GetBool(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Bool)
@@ -26,7 +26,7 @@ bool Flags::GetBool(string flagName)
 	return *static_cast<bool*>(flags[flagName]);
 }
 
-int Flags::GetInt(string flagName)
+int Flags::GetInt(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Int)
@@ -42,7 +42,7 @@ int Flags::GetInt(string flagName)
     	return *static_cast<int*>(flags[flagName]);
 }
 
-float Flags::GetFloat(string flagName)
+float Flags::GetFloat(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Float)
@@ -57,7 +57,7 @@ float Flags::GetFloat(string flagName)
 	return *static_cast<float*>(flags[flagName]);
 }
 
-string Flags::GetString(string flagName)
+string_t Flags::GetString(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
     	if (flagTypes[flagName] != FlagType::String)
@@ -68,57 +68,57 @@ string Flags::GetString(string flagName)
 		
 		
 	if (flags[flagName] == nullptr)
-		return string("");
+		return string_t("");
     
-    	return *static_cast<string*>(flags[flagName]);
+    	return *static_cast<string_t*>(flags[flagName]);
 }
 
-vector<string> Flags::GetStringList(string flagName)
+vector_t<string_t> Flags::GetStringList(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
     	if (flagTypes[flagName] != FlagType::StringList)
     	{
         	// Handle Error
-        	return vector<string>();
+        	return vector_t<string_t>();
     	}
 		
 		
 	if (flags[flagName] == nullptr)
-		return vector<string>();
+		return vector_t<string_t>();
     
-    	return *static_cast<vector<string>*>(flags[flagName]);
+    	return *static_cast<vector_t<string_t>*>(flags[flagName]);
 }
 
-vector<int> Flags::GetIntList(string flagName)
+vector_t<int> Flags::GetIntList(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
     	if (flagTypes[flagName] != FlagType::IntList)
     	{
         	// Handle Error
-        	return vector<int>();
+        	return vector_t<int>();
     	}
 		
 		
 	if (flags[flagName] == nullptr)
-		return vector<int>();
+		return vector_t<int>();
     
-    	return *static_cast<vector<int>*>(flags[flagName]);
+    	return *static_cast<vector_t<int>*>(flags[flagName]);
 }
 
-vector<float> Flags::GetFloatList(string flagName)
+vector_t<float> Flags::GetFloatList(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
     	if (flagTypes[flagName] != FlagType::FloatList)
     	{
         	// Handle Error
-        	return vector<float>();
+        	return vector_t<float>();
     	}
 		
 		
 	if (flags[flagName] == nullptr)
-		return vector<float>();
+		return vector_t<float>();
     
-    	return *static_cast<vector<float>*>(flags[flagName]);
+    	return *static_cast<vector_t<float>*>(flags[flagName]);
 }
 
 CLIParser::CLIParser(char** cliInputsOfTheCaller, int count)
@@ -127,7 +127,7 @@ CLIParser::CLIParser(char** cliInputsOfTheCaller, int count)
 	entryCount = count;
 }
 
-void CLIParser::AddFlag(string flagName, FlagType flagType)
+void CLIParser::AddFlag(string_t flagName, FlagType flagType)
 {
 	flagName.insert(0, 1, '-');
 
@@ -137,7 +137,7 @@ void CLIParser::AddFlag(string flagName, FlagType flagType)
 	flagsAndTypes[flagName] = flagType;
 }
 
-void CLIParser::RemoveFlag(string flagName)
+void CLIParser::RemoveFlag(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
 
@@ -154,7 +154,7 @@ Flags CLIParser::Parse()
 
 	for (int index = 1; index < entryCount; index++)
 	{
-		string entry = cliEntries[index];
+		string_t entry = cliEntries[index];
 		
 		if (entry[0] == '-')
 			HandleFlagEntry(index);
@@ -195,7 +195,7 @@ void* CLIParser::CLIParamToObject(int index)
 
 void* CLIParser::HandleCliList(int index)
 {
-	string flagName = cliEntries[index];
+	string_t flagName = cliEntries[index];
 
     	if (flagsAndTypes[flagName] != FlagType::FloatList &&
 		flagsAndTypes[flagName] != FlagType::IntList &&
@@ -222,14 +222,14 @@ void* CLIParser::HandleCliList(int index)
 	return nullptr;
 }
 
-vector<int>* CLIParser::HandleIntList(int index)
+vector_t<int>* CLIParser::HandleIntList(int index)
 {
-	vector<int>* resultVec = new vector<int>();
+	vector_t<int>* resultVec = new vector_t<int>();
 
 	std::stringstream ss;
 
 	index++;
-	string entry = cliEntries[index];
+	string_t entry = cliEntries[index];
 	entry.erase(0, 1);
 	
 	while (entry.back() != ']')
@@ -239,7 +239,7 @@ vector<int>* CLIParser::HandleIntList(int index)
 			entry.pop_back();
 			ss << entry;
 			resultVec->push_back(std::stoi(ss.str()));
-			ss.str(string());
+			ss.str(string_t());
 			continue;
 		}
 
@@ -258,14 +258,14 @@ vector<int>* CLIParser::HandleIntList(int index)
 	return resultVec;
 }
 
-vector<float>* CLIParser::HandleFloatList(int index)
+vector_t<float>* CLIParser::HandleFloatList(int index)
 {
-	vector<float>* resultVec = new vector<float>();
+	vector_t<float>* resultVec = new vector_t<float>();
 
 	std::stringstream ss;
 
 	index++;
-	string entry = cliEntries[index];
+	string_t entry = cliEntries[index];
 	entry.erase(0, 1);
 	
 	while (entry.back() != ']')
@@ -275,7 +275,7 @@ vector<float>* CLIParser::HandleFloatList(int index)
 			entry.pop_back();
 			ss << entry;
 			resultVec->push_back(std::stof(ss.str()));
-			ss.str(string());
+			ss.str(string_t());
 			continue;
 		}
 
@@ -294,14 +294,14 @@ vector<float>* CLIParser::HandleFloatList(int index)
 	return resultVec;
 }
 
-vector<string>* CLIParser::HandleStringList(int index)
+vector_t<string_t>* CLIParser::HandleStringList(int index)
 {
-	vector<string>* resultVec = new vector<string>();
+	vector_t<string_t>* resultVec = new vector_t<string_t>();
 
 	std::stringstream ss;
 
 	index++;
-	string entry = cliEntries[index];
+	string_t entry = cliEntries[index];
 	entry.erase(0, 1);
 
 	while (entry.back() != ']')
@@ -311,7 +311,7 @@ vector<string>* CLIParser::HandleStringList(int index)
 			entry.pop_back();	
 			ss << entry;
 			resultVec->push_back(ss.str());
-			ss.str(string());
+			ss.str(string_t());
 			continue;
 		}
 
@@ -344,7 +344,7 @@ void* CLIParser::HandleCliNumber(int index)
 	std::stringstream ss;
 
 	index++;
-	string entry = cliEntries[index];
+	string_t entry = cliEntries[index];
 
 	while (entry.front() != '-')
 	{
@@ -371,7 +371,7 @@ void* CLIParser::HandleCliNumber(int index)
 	return new int(std::stoi(ss.str()));
 }
 
-string* CLIParser::HandleCliString(int index)
+string_t* CLIParser::HandleCliString(int index)
 {	
 	if (flagsAndTypes[cliEntries[index]] != FlagType::String)
 	{
@@ -379,7 +379,7 @@ string* CLIParser::HandleCliString(int index)
 		return nullptr;
 	}
 
-	return new string(cliEntries[index+1]);
+	return new string_t(cliEntries[index+1]);
 }
 
 bool* CLIParser::HandleCliBool(int index)
