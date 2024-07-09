@@ -1,4 +1,9 @@
+#include <iostream>
+#include <sstream>
+
 #include "CLIParser.hpp"
+
+static dict_t<string_t, string_t> boundFlags;
 
 void Flags::SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet)
 {
@@ -39,7 +44,7 @@ int Flags::GetInt(string_t flagName)
 	if (flags[flagName] == nullptr)
 		return 0;
     
-    	return *static_cast<int*>(flags[flagName]);
+    return *static_cast<int*>(flags[flagName]);
 }
 
 float Flags::GetFloat(string_t flagName)
@@ -82,11 +87,10 @@ vector_t<string_t> Flags::GetStringList(string_t flagName)
         	return vector_t<string_t>();
     	}
 		
-		
 	if (flags[flagName] == nullptr)
 		return vector_t<string_t>();
     
-    	return *static_cast<vector_t<string_t>*>(flags[flagName]);
+    return *static_cast<vector_t<string_t>*>(flags[flagName]);
 }
 
 vector_t<int> Flags::GetIntList(string_t flagName)
@@ -97,7 +101,6 @@ vector_t<int> Flags::GetIntList(string_t flagName)
         	// Handle Error
         	return vector_t<int>();
     	}
-		
 		
 	if (flags[flagName] == nullptr)
 		return vector_t<int>();
@@ -137,6 +140,17 @@ void CLIParser::AddFlag(string_t flagName, FlagType flagType)
 	flagsAndTypes[flagName] = flagType;
 }
 
+void CLIParser::BindFlag(string_t flagName, string_t bindTo)
+{
+    flagName.insert(0, 1, '-');
+    bindTo.insert(0, 1, '-');
+
+    if (boundFlags.contains(flagName))
+            return;
+
+    boundFlags[flagName] = bindTo;
+}
+
 void CLIParser::RemoveFlag(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
@@ -167,10 +181,20 @@ Flags CLIParser::Parse()
 
 void CLIParser::HandleFlagEntry(int index)
 {
+    string_t flag { cliEntries[index] };
+
 	if (resultFlags.contains(cliEntries[index]))
 		return;
 
-	resultFlags[cliEntries[index]] = CLIParamToObject(index);;
+    if (boundFlags.contains(flag))
+    {
+        std::cout << "Flag " << flag << " is bound to " << boundFlags[flag] << '\n';
+        AddFlag("sl", FlagType::StringList);
+        resultFlags[boundFlags[flag]] = CLIParamToObject(index);
+        RemoveFlag("sl");
+    }
+    else
+        resultFlags[flag] = CLIParamToObject(index);
 }
 
 void* CLIParser::CLIParamToObject(int index)
@@ -189,7 +213,7 @@ void* CLIParser::CLIParamToObject(int index)
 	if (cliEntries[index+1][0] == '-')
 		return HandleCliBool(index);
 	
-	std::cout << "An Error Occured\n";
+	std::cout << "An Error Occured During the CLI Parsing Process\n";
 	return nullptr;
 }
 

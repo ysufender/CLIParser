@@ -2,10 +2,8 @@
 
 #include <cctype>
 #include <unordered_map>
-#include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #define vector_t std::vector
 #define dict_t std::unordered_map
@@ -31,7 +29,6 @@ class Flags
 		dict_t<string_t, FlagType> flagTypes;
 	
 	public:
-		void SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet);
 		bool GetBool(string_t flagName);
 		int GetInt(string_t flagName);
 		float GetFloat(string_t flagName);
@@ -39,6 +36,9 @@ class Flags
 		vector_t<string_t> GetStringList(string_t flagName);
 		vector_t<int> GetIntList(string_t flagName);
 		vector_t<float> GetFloatList(string_t flagName);
+
+    private:
+		void SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet);
 };
 
 class CLIParser : Flags
@@ -52,6 +52,7 @@ class CLIParser : Flags
 	public:
 		CLIParser(char** cliInputsOfTheCaller, int count);
 		void AddFlag(string_t flagName, FlagType flagType);
+        void BindFlag(string_t flagName, string_t bindTo);
 		void RemoveFlag(string_t flagName);
 		Flags Parse();
 

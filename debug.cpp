@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "CLIParser.hpp"
 
 // Try something
@@ -6,13 +8,14 @@ int main(int argc, char** args)
 {	
 	CLIParser parser { args, argc };
 	//parser.AddFlag("b", FlagType::Bool);
-	parser.AddFlag("sl", FlagType::StringList);
+	parser.AddFlag("stringList", FlagType::StringList);
+    parser.BindFlag("sl", "stringList");
 	//parser.AddFlag("il", FlagType::IntList);
 	//parser.AddFlag("fl", FlagType::FloatList);
 	Flags flags = parser.Parse();
 	
-	for (auto& it: flags.GetStringList("sl")) {
-		std::cout << "sl: " << it << "\n";
+	for (auto& it: flags.GetStringList("stringList")) {
+		std::cout << "stringList: " << it << "\n";
 	}
 
 	//for (auto& it: flags.GetIntList<int>("il")) {

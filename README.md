@@ -166,6 +166,48 @@ Be aware that the square brackets must be attached to the first and last element
 
 So `[4,4,3]`, `[ List ]`, `[5,4 , 3]` will cause you trouble.
 
+
+## Binding Flags
+
+Sometimes we might want to use both `-h` and `-help` for help flag. But we want them both to have the same value depending on usage. So what do we do? Yeah we bind them.
+Binding is a one way operation. You can bind a flag to another but can't (you can actually but I wouldn't suggest doing so) bind the binder one to the binded. Yeah.
+
+```
+
+#include "CLIParser.hpp"
+
+
+int main(int argc, char** args)
+{
+CLIParser parser {args, argc};
+parser.AddFlag("help", FlagType::Bool);
+parser.BindFlag("h", "help");
+}
+```
+
+Now, we binded the `-h` flag to `-help`. So whenever we do `exe -h`, the value of `-help` will be true.
+
+```
+#include <iostream>
+
+#include "CLIParser.hpp"
+
+int main(int argc, char** args)
+{
+CLIParser parser {args, argc};
+parser.AddFlag("help", FlagType::Bool);
+parser.BindFlag("h", "help");
+
+Flags flags = parser.Parse();
+bool help = flags.GetBool("help");
+
+std::cout <<  "This shall print one if help is needed: " << help << '\n';
+}
+```
+
+Fun Fact: If you try to `flags.GetBool("h")` you'll always get `false`. That's because `h` is binded to `help` so actually there is no flag named `h`. That's all thanks.
+
+
 ## NFAQ (Not so Frequently Asked Questions)
 
 Q: Can I do "[ 5, ]" for an integer list?\
