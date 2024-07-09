@@ -13,8 +13,10 @@ int main(int argc, char** args)
 	//parser.AddFlag("il", FlagType::IntList);
 	//parser.AddFlag("fl", FlagType::FloatList);
 	Flags flags = parser.Parse();
-	
-	for (auto& it: flags.GetStringList("stringList")) {
+
+    auto& list = flags.GetStringList("stringList");
+
+	for (auto& it: list) {
 		std::cout << "stringList: " << it << "\n";
 	}
 

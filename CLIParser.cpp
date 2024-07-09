@@ -5,123 +5,129 @@
 
 static dict_t<string_t, string_t> boundFlags;
 
+static const bool errBool { false };
+static const int errInt { 0 };
+static const float errFloat { 0 };
+static const string_t errString { " " };
+static const vector_t<string_t> errVecStr { };
+static const vector_t<int> errVecInt { };
+static const vector_t<float> errVecFloat { };
+
 void Flags::SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet)
 {
 	flags = flagsToSet;
 	flagTypes = flagTypesToSet;
-
-	//for (auto& it: flagTypes) {
-		//std::cout << it.first << "\n";
-		//std::cout << it.first << ": " << int(it.second) << "\n";
-	//}
 }
 
-bool Flags::GetBool(string_t flagName)
+const bool& Flags::GetBool(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Bool)
 	{
 	    // Handle Error
-	    return false;
+        return errBool;
 	}
 	
 	if (flags[flagName] == nullptr)
-		return false;
+        return errBool;
 	
 	return *static_cast<bool*>(flags[flagName]);
 }
 
-int Flags::GetInt(string_t flagName)
+const int& Flags::GetInt(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Int)
 	{
 		// Handle Error
-        	return 0;
-    	}
+        return errInt;
+    }
 		
 		
 	if (flags[flagName] == nullptr)
-		return 0;
+		return errInt;
     
     return *static_cast<int*>(flags[flagName]);
 }
 
-float Flags::GetFloat(string_t flagName)
+const float& Flags::GetFloat(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Float)
 	{
 		// Handle Error
-		return 0.0;
+		return errFloat;
 	}
 	
 	if (flags[flagName] == nullptr)
-		return 0.0;
+        return errFloat;
 
 	return *static_cast<float*>(flags[flagName]);
 }
 
-string_t Flags::GetString(string_t flagName)
+const string_t& Flags::GetString(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
-    	if (flagTypes[flagName] != FlagType::String)
-    	{
-        	// Handle Error
-        	return "";
-    	}
+    if (flagTypes[flagName] != FlagType::String)
+    {
+        // Handle Error
+        return errString;
+    }
 		
 		
 	if (flags[flagName] == nullptr)
-		return string_t("");
+        return errString;
     
-    	return *static_cast<string_t*>(flags[flagName]);
+   	return *static_cast<string_t*>(flags[flagName]);
 }
 
-vector_t<string_t> Flags::GetStringList(string_t flagName)
+const vector_t<string_t>& Flags::GetStringList(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
-    	if (flagTypes[flagName] != FlagType::StringList)
-    	{
-        	// Handle Error
-        	return vector_t<string_t>();
-    	}
+    	
+    if (flagTypes[flagName] != FlagType::StringList)
+    {
+       	// Handle Error
+        return errVecStr;
+    }
 		
 	if (flags[flagName] == nullptr)
-		return vector_t<string_t>();
+        return errVecStr;
     
     return *static_cast<vector_t<string_t>*>(flags[flagName]);
 }
 
-vector_t<int> Flags::GetIntList(string_t flagName)
+const vector_t<int>& Flags::GetIntList(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
-    	if (flagTypes[flagName] != FlagType::IntList)
-    	{
-        	// Handle Error
-        	return vector_t<int>();
-    	}
+
+    if (flagTypes[flagName] != FlagType::IntList)
+	{
+       	// Handle Error
+        return errVecInt;
+   	}
 		
 	if (flags[flagName] == nullptr)
-		return vector_t<int>();
+        return errVecInt;
     
-    	return *static_cast<vector_t<int>*>(flags[flagName]);
+   	return *static_cast<vector_t<int>*>(flags[flagName]);
 }
 
-vector_t<float> Flags::GetFloatList(string_t flagName)
+const vector_t<float>& Flags::GetFloatList(string_t flagName)
 {
 	flagName.insert(0, 1, '-');
-    	if (flagTypes[flagName] != FlagType::FloatList)
-    	{
-        	// Handle Error
-        	return vector_t<float>();
-    	}
+
+    if (flagTypes[flagName] != FlagType::FloatList)
+    {
+       	// Handle Error
+        return errVecFloat;
+    }
 		
 		
 	if (flags[flagName] == nullptr)
-		return vector_t<float>();
+        return errVecFloat;
     
-    	return *static_cast<vector_t<float>*>(flags[flagName]);
+    return *static_cast<vector_t<float>*>(flags[flagName]);
 }
 
 CLIParser::CLIParser(char** cliInputsOfTheCaller, int count)
@@ -161,7 +167,7 @@ void CLIParser::RemoveFlag(string_t flagName)
 	flagsAndTypes.erase(flagName);
 }
 
-Flags CLIParser::Parse()
+const Flags CLIParser::Parse()
 {
 	//for (auto& i : flagsAndTypes)
 	//	std::cout << i.first << ": " << int(i.second) << "\n";	

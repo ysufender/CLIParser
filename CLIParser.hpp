@@ -29,13 +29,13 @@ class Flags
 		dict_t<string_t, FlagType> flagTypes;
 	
 	public:
-		bool GetBool(string_t flagName);
-		int GetInt(string_t flagName);
-		float GetFloat(string_t flagName);
-		string_t GetString(string_t flagName);
-		vector_t<string_t> GetStringList(string_t flagName);
-		vector_t<int> GetIntList(string_t flagName);
-		vector_t<float> GetFloatList(string_t flagName);
+		const bool& GetBool(string_t flagName);
+		const int& GetInt(string_t flagName);
+		const float& GetFloat(string_t flagName);
+		const string_t& GetString(string_t flagName);
+		const vector_t<string_t>& GetStringList(string_t flagName);
+		const vector_t<int>& GetIntList(string_t flagName);
+		const vector_t<float>& GetFloatList(string_t flagName);
 
     private:
 		void SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet);
@@ -54,7 +54,7 @@ class CLIParser : Flags
 		void AddFlag(string_t flagName, FlagType flagType);
         void BindFlag(string_t flagName, string_t bindTo);
 		void RemoveFlag(string_t flagName);
-		Flags Parse();
+		const Flags Parse();
 
 	private:
 		void HandleFlagEntry(int index);
