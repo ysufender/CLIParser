@@ -194,7 +194,6 @@ void CLIParser::HandleFlagEntry(int index)
 
     if (boundFlags.contains(flag))
     {
-        std::cout << "Flag " << flag << " is bound to " << boundFlags[flag] << '\n';
         AddFlag("sl", FlagType::StringList);
         resultFlags[boundFlags[flag]] = CLIParamToObject(index);
         RemoveFlag("sl");
