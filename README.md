@@ -1,4 +1,5 @@
 
+
 # CLIParser
 
   
@@ -40,34 +41,20 @@ To use the CLIParser, we first use the `CLIParser` class.
 
   
 
-```
-
+```cpp
 #include "CLIParser.hpp"
 
-  
-
 int main(int argc, char** args)
-
 {
-
-CLIParser parser {args, argc};
-
-parser.AddFlag("i", FlagType::Int);
-
-parser.AddFlag("f", FlagType::Float);
-
-parser.AddFlag("s", FlagType::String);
-
-parser.AddFlag("b", FlagType::Bool);
-
-parser.AddFlag("il", FlagType::IntList);
-
-parser.AddFlag("fl", FlagType::FloatList);
-
-parser.AddFlag("sl", FlagType::StringList);
-
+	CLIParser parser {args, argc};
+	parser.AddFlag("i", FlagType::Int);
+	parser.AddFlag("f", FlagType::Float);
+	parser.AddFlag("s", FlagType::String);
+	parser.AddFlag("b", FlagType::Bool);
+	parser.AddFlag("il", FlagType::IntList);
+	parser.AddFlag("fl", FlagType::FloatList);
+	parser.AddFlag("sl", FlagType::StringList);
 }
-
 ```
 
   
@@ -76,50 +63,28 @@ Voila! Now it's time to parse the command line and return our flags.
 
   
 
-```
-
+```cpp
 #include "CLIParser.hpp"
 
-  
-
 int main(int argc, char** args)
-
 {
+	CLIParser parser {args, argc};
+	parser.AddFlag("i", FlagType::Int);
+	parser.AddFlag("f", FlagType::Float);
+	parser.AddFlag("s", FlagType::String);
+	parser.AddFlag("b", FlagType::Bool);
+	parser.AddFlag("il", FlagType::IntList);
+	parser.AddFlag("fl", FlagType::FloatList);
+	parser.AddFlag("sl", FlagType::StringList);
 
-CLIParser parser {args, argc};
-
-parser.AddFlag("i", FlagType::Int);
-
-parser.AddFlag("f", FlagType::Float);
-
-parser.AddFlag("s", FlagType::String);
-
-parser.AddFlag("b", FlagType::Bool);
-
-parser.AddFlag("il", FlagType::IntList);
-
-parser.AddFlag("fl", FlagType::FloatList);
-
-parser.AddFlag("sl", FlagType::StringList);
-
-  
-
-Flags flags = parser.Parse();
-
-int i = flags.GetInt("i");
-
-float f = flags.GetFloat("f");
-
-string s = flags.GetString("s");
-
-bool b = flags.GetBool("b");
-
-vector<int> = flags.GetIntList("il");
-
-vector<float> = flags.GetFloatList("fl");
-
-vector<string> = flags.GetStringList("sl");
-
+	Flags flags = parser.Parse();
+	int i = flags.GetInt("i");
+	float f = flags.GetFloat("f");
+	string s = flags.GetString("s");
+	bool b = flags.GetBool("b");
+	vector<int> = flags.GetIntList("il");
+	vector<float> = flags.GetFloatList("fl");
+	vector<string> = flags.GetStringList("sl");
 }
 
 ```
@@ -172,36 +137,34 @@ So `[4,4,3]`, `[ List ]`, `[5,4 , 3]` will cause you trouble.
 Sometimes we might want to use both `-h` and `-help` for help flag. But we want them both to have the same value depending on usage. So what do we do? Yeah we bind them.
 Binding is a one way operation. You can bind a flag to another but can't (you can actually but I wouldn't suggest doing so) bind the binder one to the binded. Yeah.
 
-```
-
+```cpp
 #include "CLIParser.hpp"
-
 
 int main(int argc, char** args)
 {
-CLIParser parser {args, argc};
-parser.AddFlag("help", FlagType::Bool);
-parser.BindFlag("h", "help");
+	CLIParser parser {args, argc};
+	parser.AddFlag("help", FlagType::Bool);
+	parser.BindFlag("h", "help");
 }
 ```
 
 Now, we binded the `-h` flag to `-help`. So whenever we do `exe -h`, the value of `-help` will be true.
 
-```
+```cpp
 #include <iostream>
 
 #include "CLIParser.hpp"
 
 int main(int argc, char** args)
 {
-CLIParser parser {args, argc};
-parser.AddFlag("help", FlagType::Bool);
-parser.BindFlag("h", "help");
+	CLIParser parser {args, argc};
+	parser.AddFlag("help", FlagType::Bool);
+	parser.BindFlag("h", "help");
 
-Flags flags = parser.Parse();
-bool help = flags.GetBool("help");
+	Flags flags = parser.Parse();
+	bool help = flags.GetBool("help");
 
-std::cout <<  "This shall print one if help is needed: " << help << '\n';
+	std::cout <<  "This shall print one if help is needed: " << help << '\n';
 }
 ```
 
