@@ -8,7 +8,7 @@ static std::unordered_map<std::string, std::string> boundFlags;
 static const bool errBool { false };
 static const int errInt { 0 };
 static const float errFloat { 0 };
-static const std::string errString { " " };
+static const std::string errString { };
 static const std::vector<std::string> errVecStr { };
 static const std::vector<int> errVecInt { };
 static const std::vector<float> errVecFloat { };
