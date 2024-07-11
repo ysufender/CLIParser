@@ -7,7 +7,7 @@
 
 #define vector_t std::vector
 #define dict_t std::unordered_map
-#define string_t std::string
+using string_t = std::string;
 
 enum class FlagType
 {
