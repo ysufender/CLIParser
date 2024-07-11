@@ -5,10 +5,6 @@
 #include <string>
 #include <vector>
 
-#define vector_t std::vector
-#define dict_t std::unordered_map
-using string_t = std::string;
-
 enum class FlagType
 {
 	Int = 0,
@@ -25,45 +21,45 @@ class Flags
 	friend class CLIParser;
 
 	private:
-		dict_t<string_t, void*> flags;
-		dict_t<string_t, FlagType> flagTypes;
+		std::unordered_map<std::string, void*> flags;
+		std::unordered_map<std::string, FlagType> flagTypes;
 	
 	public:
-		const bool& GetBool(string_t flagName);
-		const int& GetInt(string_t flagName);
-		const float& GetFloat(string_t flagName);
-		const string_t& GetString(string_t flagName);
-		const vector_t<string_t>& GetStringList(string_t flagName);
-		const vector_t<int>& GetIntList(string_t flagName);
-		const vector_t<float>& GetFloatList(string_t flagName);
+		const bool& GetBool(std::string flagName);
+		const int& GetInt(std::string flagName);
+		const float& GetFloat(std::string flagName);
+		const std::string& GetString(std::string flagName);
+		const std::vector<std::string>& GetStringList(std::string flagName);
+		const std::vector<int>& GetIntList(std::string flagName);
+		const std::vector<float>& GetFloatList(std::string flagName);
 
     private:
-		void SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet);
+		void SetUp(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet);
 };
 
 class CLIParser : Flags
 {
 	private:
-		dict_t<string_t, void*> resultFlags;
-		dict_t<string_t, FlagType> flagsAndTypes;
+		std::unordered_map<std::string, void*> resultFlags;
+		std::unordered_map<std::string, FlagType> flagsAndTypes;
 		char** cliEntries;
 		int entryCount;
 	
 	public:
 		CLIParser(char** cliInputsOfTheCaller, int count);
-		void AddFlag(string_t flagName, FlagType flagType);
-        void BindFlag(string_t flagName, string_t bindTo);
-		void RemoveFlag(string_t flagName);
+		void AddFlag(std::string flagName, FlagType flagType);
+        void BindFlag(std::string flagName, std::string bindTo);
+		void RemoveFlag(std::string flagName);
 		const Flags Parse();
 
 	private:
 		void HandleFlagEntry(int index);
 		void* CLIParamToObject(int index);
 		void* HandleCliList(int index);
-		vector_t<int>* HandleIntList(int index);
-		vector_t<float>* HandleFloatList(int index);
-		vector_t<string_t>* HandleStringList(int index);
+		std::vector<int>* HandleIntList(int index);
+		std::vector<float>* HandleFloatList(int index);
+		std::vector<std::string>* HandleStringList(int index);
 		void* HandleCliNumber(int index);
-		string_t* HandleCliString(int index);
+		std::string* HandleCliString(int index);
 		bool* HandleCliBool(int index);
 };

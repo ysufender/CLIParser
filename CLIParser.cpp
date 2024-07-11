@@ -3,23 +3,23 @@
 
 #include "CLIParser.hpp"
 
-static dict_t<string_t, string_t> boundFlags;
+static std::unordered_map<std::string, std::string> boundFlags;
 
 static const bool errBool { false };
 static const int errInt { 0 };
 static const float errFloat { 0 };
-static const string_t errString { " " };
-static const vector_t<string_t> errVecStr { };
-static const vector_t<int> errVecInt { };
-static const vector_t<float> errVecFloat { };
+static const std::string errString { " " };
+static const std::vector<std::string> errVecStr { };
+static const std::vector<int> errVecInt { };
+static const std::vector<float> errVecFloat { };
 
-void Flags::SetUp(dict_t<string_t, void*> flagsToSet, dict_t<string_t, FlagType> flagTypesToSet)
+void Flags::SetUp(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet)
 {
 	flags = flagsToSet;
 	flagTypes = flagTypesToSet;
 }
 
-const bool& Flags::GetBool(string_t flagName)
+const bool& Flags::GetBool(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Bool)
@@ -34,7 +34,7 @@ const bool& Flags::GetBool(string_t flagName)
 	return *static_cast<bool*>(flags[flagName]);
 }
 
-const int& Flags::GetInt(string_t flagName)
+const int& Flags::GetInt(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Int)
@@ -50,7 +50,7 @@ const int& Flags::GetInt(string_t flagName)
     return *static_cast<int*>(flags[flagName]);
 }
 
-const float& Flags::GetFloat(string_t flagName)
+const float& Flags::GetFloat(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 	if (flagTypes[flagName] != FlagType::Float)
@@ -65,7 +65,7 @@ const float& Flags::GetFloat(string_t flagName)
 	return *static_cast<float*>(flags[flagName]);
 }
 
-const string_t& Flags::GetString(string_t flagName)
+const std::string& Flags::GetString(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
     if (flagTypes[flagName] != FlagType::String)
@@ -78,10 +78,10 @@ const string_t& Flags::GetString(string_t flagName)
 	if (flags[flagName] == nullptr)
         return errString;
     
-   	return *static_cast<string_t*>(flags[flagName]);
+   	return *static_cast<std::string*>(flags[flagName]);
 }
 
-const vector_t<string_t>& Flags::GetStringList(string_t flagName)
+const std::vector<std::string>& Flags::GetStringList(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
     	
@@ -94,10 +94,10 @@ const vector_t<string_t>& Flags::GetStringList(string_t flagName)
 	if (flags[flagName] == nullptr)
         return errVecStr;
     
-    return *static_cast<vector_t<string_t>*>(flags[flagName]);
+    return *static_cast<std::vector<std::string>*>(flags[flagName]);
 }
 
-const vector_t<int>& Flags::GetIntList(string_t flagName)
+const std::vector<int>& Flags::GetIntList(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 
@@ -110,10 +110,10 @@ const vector_t<int>& Flags::GetIntList(string_t flagName)
 	if (flags[flagName] == nullptr)
         return errVecInt;
     
-   	return *static_cast<vector_t<int>*>(flags[flagName]);
+   	return *static_cast<std::vector<int>*>(flags[flagName]);
 }
 
-const vector_t<float>& Flags::GetFloatList(string_t flagName)
+const std::vector<float>& Flags::GetFloatList(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 
@@ -127,7 +127,7 @@ const vector_t<float>& Flags::GetFloatList(string_t flagName)
 	if (flags[flagName] == nullptr)
         return errVecFloat;
     
-    return *static_cast<vector_t<float>*>(flags[flagName]);
+    return *static_cast<std::vector<float>*>(flags[flagName]);
 }
 
 CLIParser::CLIParser(char** cliInputsOfTheCaller, int count)
@@ -136,7 +136,7 @@ CLIParser::CLIParser(char** cliInputsOfTheCaller, int count)
 	entryCount = count;
 }
 
-void CLIParser::AddFlag(string_t flagName, FlagType flagType)
+void CLIParser::AddFlag(std::string flagName, FlagType flagType)
 {
 	flagName.insert(0, 1, '-');
 
@@ -146,7 +146,7 @@ void CLIParser::AddFlag(string_t flagName, FlagType flagType)
 	flagsAndTypes[flagName] = flagType;
 }
 
-void CLIParser::BindFlag(string_t flagName, string_t bindTo)
+void CLIParser::BindFlag(std::string flagName, std::string bindTo)
 {
     flagName.insert(0, 1, '-');
     bindTo.insert(0, 1, '-');
@@ -157,7 +157,7 @@ void CLIParser::BindFlag(string_t flagName, string_t bindTo)
     boundFlags[flagName] = bindTo;
 }
 
-void CLIParser::RemoveFlag(string_t flagName)
+void CLIParser::RemoveFlag(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 
@@ -174,7 +174,7 @@ const Flags CLIParser::Parse()
 
 	for (int index = 1; index < entryCount; index++)
 	{
-		string_t entry = cliEntries[index];
+		std::string entry = cliEntries[index];
 		
 		if (entry[0] == '-')
 			HandleFlagEntry(index);
@@ -187,7 +187,7 @@ const Flags CLIParser::Parse()
 
 void CLIParser::HandleFlagEntry(int index)
 {
-    string_t flag { cliEntries[index] };
+    std::string flag { cliEntries[index] };
 
 	if (resultFlags.contains(cliEntries[index]))
 		return;
@@ -224,7 +224,7 @@ void* CLIParser::CLIParamToObject(int index)
 
 void* CLIParser::HandleCliList(int index)
 {
-	string_t flagName = cliEntries[index];
+	std::string flagName = cliEntries[index];
 
     	if (flagsAndTypes[flagName] != FlagType::FloatList &&
 		flagsAndTypes[flagName] != FlagType::IntList &&
@@ -251,14 +251,14 @@ void* CLIParser::HandleCliList(int index)
 	return nullptr;
 }
 
-vector_t<int>* CLIParser::HandleIntList(int index)
+std::vector<int>* CLIParser::HandleIntList(int index)
 {
-	vector_t<int>* resultVec = new vector_t<int>();
+	std::vector<int>* resultVec = new std::vector<int>();
 
 	std::stringstream ss;
 
 	index++;
-	string_t entry = cliEntries[index];
+	std::string entry = cliEntries[index];
 	entry.erase(0, 1);
 	
 	while (entry.back() != ']')
@@ -268,7 +268,7 @@ vector_t<int>* CLIParser::HandleIntList(int index)
 			entry.pop_back();
 			ss << entry;
 			resultVec->push_back(std::stoi(ss.str()));
-			ss.str(string_t());
+			ss.str(std::string());
 			continue;
 		}
 
@@ -287,14 +287,14 @@ vector_t<int>* CLIParser::HandleIntList(int index)
 	return resultVec;
 }
 
-vector_t<float>* CLIParser::HandleFloatList(int index)
+std::vector<float>* CLIParser::HandleFloatList(int index)
 {
-	vector_t<float>* resultVec = new vector_t<float>();
+	std::vector<float>* resultVec = new std::vector<float>();
 
 	std::stringstream ss;
 
 	index++;
-	string_t entry = cliEntries[index];
+	std::string entry = cliEntries[index];
 	entry.erase(0, 1);
 	
 	while (entry.back() != ']')
@@ -304,7 +304,7 @@ vector_t<float>* CLIParser::HandleFloatList(int index)
 			entry.pop_back();
 			ss << entry;
 			resultVec->push_back(std::stof(ss.str()));
-			ss.str(string_t());
+			ss.str(std::string());
 			continue;
 		}
 
@@ -323,14 +323,14 @@ vector_t<float>* CLIParser::HandleFloatList(int index)
 	return resultVec;
 }
 
-vector_t<string_t>* CLIParser::HandleStringList(int index)
+std::vector<std::string>* CLIParser::HandleStringList(int index)
 {
-	vector_t<string_t>* resultVec = new vector_t<string_t>();
+	std::vector<std::string>* resultVec = new std::vector<std::string>();
 
 	std::stringstream ss;
 
 	index++;
-	string_t entry = cliEntries[index];
+	std::string entry = cliEntries[index];
 	entry.erase(0, 1);
 
 	while (entry.back() != ']')
@@ -340,7 +340,7 @@ vector_t<string_t>* CLIParser::HandleStringList(int index)
 			entry.pop_back();	
 			ss << entry;
 			resultVec->push_back(ss.str());
-			ss.str(string_t());
+			ss.str(std::string());
 			continue;
 		}
 
@@ -373,7 +373,7 @@ void* CLIParser::HandleCliNumber(int index)
 	std::stringstream ss;
 
 	index++;
-	string_t entry = cliEntries[index];
+	std::string entry = cliEntries[index];
 
 	while (entry.front() != '-')
 	{
@@ -400,7 +400,7 @@ void* CLIParser::HandleCliNumber(int index)
 	return new int(std::stoi(ss.str()));
 }
 
-string_t* CLIParser::HandleCliString(int index)
+std::string* CLIParser::HandleCliString(int index)
 {	
 	if (flagsAndTypes[cliEntries[index]] != FlagType::String)
 	{
@@ -408,7 +408,7 @@ string_t* CLIParser::HandleCliString(int index)
 		return nullptr;
 	}
 
-	return new string_t(cliEntries[index+1]);
+	return new std::string(cliEntries[index+1]);
 }
 
 bool* CLIParser::HandleCliBool(int index)
