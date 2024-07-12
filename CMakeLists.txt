@@ -14,7 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "DebugTest")
     add_executable(CLIParser CLIParser.cpp debug.cpp)
 else()
     add_library(CLIParser STATIC CLIParser.cpp)
