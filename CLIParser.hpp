@@ -33,11 +33,13 @@ class Flags
 		const std::vector<int>& GetIntList(std::string flagName);
 		const std::vector<float>& GetFloatList(std::string flagName);
 
+        ~Flags();
+
     private:
 		void SetUp(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet);
 };
 
-class CLIParser : Flags
+class CLIParser
 {
 	private:
 		std::unordered_map<std::string, void*> resultFlags;

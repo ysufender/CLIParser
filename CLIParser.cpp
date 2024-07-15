@@ -130,6 +130,42 @@ const std::vector<float>& Flags::GetFloatList(std::string flagName)
     return *static_cast<std::vector<float>*>(flags[flagName]);
 }
 
+Flags::~Flags()
+{
+    for (auto& [name, pointer] : flags)
+    {
+        const FlagType& type { flagTypes.at(name) }; 
+
+        switch (type) {
+            case FlagType::Bool:
+                delete static_cast<bool*>(pointer);
+                break;
+            case FlagType::Int:
+                delete static_cast<int*>(pointer);
+                break;
+            case FlagType::Float:
+                delete static_cast<float*>(pointer);
+                break;
+            case FlagType::String:
+                delete static_cast<std::string*>(pointer);
+                break;
+            case FlagType::StringList:
+                delete static_cast<std::vector<std::string>*>(pointer);
+                break;
+            case FlagType::IntList:
+                delete static_cast<std::vector<int>*>(pointer);
+                break;
+            case FlagType::FloatList:
+                delete static_cast<std::vector<float>*>(pointer);
+                break;
+        }
+    }
+}
+
+
+//
+// CLIParser Implementation
+//
 CLIParser::CLIParser(char** cliInputsOfTheCaller, int count)
 {
 	cliEntries = cliInputsOfTheCaller;
@@ -182,6 +218,7 @@ const Flags CLIParser::Parse()
 
 	Flags toReturn;
 	toReturn.SetUp(resultFlags, flagsAndTypes);
+
 	return toReturn;
 }
 
@@ -415,5 +452,3 @@ bool* CLIParser::HandleCliBool(int index)
 {
 	return new bool(true);
 }
-
-
