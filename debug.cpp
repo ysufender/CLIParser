@@ -10,11 +10,14 @@ int main(int argc, char** args)
     //std::cout << '\n' << args[i];
 
 	CLIParser parser { args, argc };
-	//parser.AddFlag("b", FlagType::Bool);
+	parser.AddFlag("bool", FlagType::Bool);
+    parser.BindFlag("b", "bool");
 	parser.AddFlag("stringList", FlagType::StringList);
     parser.BindFlag("sl", "stringList");
 	parser.AddFlag("il", FlagType::IntList);
+    parser.BindFlag("i", "il");
 	parser.AddFlag("fl", FlagType::FloatList);
+    parser.BindFlag("f", "fl");
 	Flags flags = parser.Parse();
 
     auto& list = flags.GetStringList("stringList");
@@ -22,19 +25,19 @@ int main(int argc, char** args)
 	for (auto& it: list) {
 	std::cout << "stringList: \"" << it << "\"\n";
 	}
-    std::cout << "\n\n";
 	for (auto& it: flags.GetIntList("il")) {
 	std::cout << "il: " << it << "\n";
 	}
-    std::cout << "\n\n";
 	for (auto& it: flags.GetFloatList("fl")) {
 	std::cout << "fl: " << it << "\n";
 	}
+
+    std::cout << "There is " << (flags.GetIntList("i").size() == 0 ? "no" : "a") << " flag named `i`";;
 	
-	//if (flags.GetBool("b"))
-	//	std::cout << "It's b'ing time";
-	//else
-	//	std::cout << "Nobe";
+	if (flags.GetBool("bool"))
+		std::cout << "\n\nIt's b'ing time";
+	else
+		std::cout << "\n\nNobe";
 	
 	return 1;
 }

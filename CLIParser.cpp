@@ -231,9 +231,9 @@ void CLIParser::HandleFlagEntry(int index)
 
     if (boundFlags.contains(flag))
     {
-        AddFlag("sl", FlagType::StringList);
+        flagsAndTypes[flag] = flagsAndTypes[boundFlags[flag]];
         resultFlags[boundFlags[flag]] = CLIParamToObject(index);
-        RemoveFlag("sl");
+        flagsAndTypes.erase(flag);
     }
     else
         resultFlags[flag] = CLIParamToObject(index);
