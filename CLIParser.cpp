@@ -284,7 +284,6 @@ void* CLIParser::HandleCliList(int index)
 		return HandleStringList(index);
 
 	// Handle Error
-	
 	return nullptr;
 }
 
@@ -377,6 +376,7 @@ std::vector<std::string>* CLIParser::HandleStringList(int index)
 			entry.pop_back();	
 			ss << entry;
 			resultVec->push_back(ss.str());
+            //std::cout << "\n" << ss.str();
 			ss.str(std::string());
 			continue;
 		}
@@ -385,8 +385,13 @@ std::vector<std::string>* CLIParser::HandleStringList(int index)
 		entry = cliEntries[index];
 	}
 
-	entry.pop_back();
-	ss << entry;
+    if (entry != "]")
+    {
+        entry.pop_back();
+	    ss << entry;
+    }	
+    else
+        ss << cliEntries[index-1];
 	
 	if (ss.str().empty())
 		return resultVec;
