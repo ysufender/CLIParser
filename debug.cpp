@@ -20,24 +20,22 @@ int main(int argc, char** args)
     parser.BindFlag("f", "fl");
 	Flags flags = parser.Parse();
 
-    auto& list = flags.GetStringList("stringList");
+    const auto& list = flags.GetStringList("stringList");
 
 	for (auto& it: list) {
-	std::cout << "stringList: \"" << it << "\"\n";
+        std::cout << "stringList: \"" << it << "\"\n";
 	}
 	for (auto& it: flags.GetIntList("il")) {
-	std::cout << "il: " << it << "\n";
+        std::cout << "il: " << it << "\n";
 	}
 	for (auto& it: flags.GetFloatList("fl")) {
-	std::cout << "fl: " << it << "\n";
+        std::cout << "fl: " << it << "\n";
 	}
 
-    std::cout << "There is " << (flags.GetIntList("i").size() == 0 ? "no" : "a") << " flag named `i`";;
-	
-	if (flags.GetBool("bool"))
-		std::cout << "\n\nIt's b'ing time";
-	else
-		std::cout << "\n\nNobe";
+    std::cout << "There is " << (flags.GetIntList("i").size() == 0 ? "no" : "a") << " flag named `i`\n";;
+
+    if (flags.GetBool("bool"))
+        std::cout << "I'm so booling rn\n";
 	
 	return 1;
 }

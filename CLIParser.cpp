@@ -1,5 +1,11 @@
+#include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <string_view>
+#include <array>
+#include <algorithm>
 
 #include "CLIParser.hpp"
 
@@ -13,121 +19,129 @@ static const std::vector<std::string> errVecStr { };
 static const std::vector<int> errVecInt { };
 static const std::vector<float> errVecFloat { };
 
-void Flags::SetUp(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet)
+static const std::array<FlagType, 2> numTypes { 
+    FlagType::Int,
+    FlagType::Float
+};
+
+static const std::array<FlagType, 3> listType { 
+    FlagType::IntList,
+    FlagType::FloatList,
+    FlagType::StringList
+};
+
+Flags::Flags(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet)
+    : flags(flagsToSet), flagTypes(flagTypesToSet) 
 {
-	flags = flagsToSet;
-	flagTypes = flagTypesToSet;
 }
 
 const bool& Flags::GetBool(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
-	if (flagTypes[flagName] != FlagType::Bool)
+
+	if (!flags.contains(flagName) || flags.at(flagName) == nullptr)
+        return errBool;
+
+	if (flagTypes.at(flagName) != FlagType::Bool)
 	{
-	    // Handle Error
+        std::cerr << "Type missmatch. Given flag " << flagName << " is not a bool\n";
         return errBool;
 	}
 	
-	if (flags[flagName] == nullptr)
-        return errBool;
-	
-	return *static_cast<bool*>(flags[flagName]);
+	return *static_cast<bool*>(flags.at(flagName));
 }
 
 const int& Flags::GetInt(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
-	if (flagTypes[flagName] != FlagType::Int)
+
+	if (!flags.contains(flagName) || flags.at(flagName) == nullptr)
+        return errInt;
+
+	if (flagTypes.at(flagName) != FlagType::Int)
 	{
-		// Handle Error
+        std::cerr << "Type missmatch. Given flag " << flagName << " is not an int\n";
         return errInt;
     }
 		
-		
-	if (flags[flagName] == nullptr)
-		return errInt;
-    
-    return *static_cast<int*>(flags[flagName]);
+    return *static_cast<int*>(flags.at(flagName));
 }
 
 const float& Flags::GetFloat(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
-	if (flagTypes[flagName] != FlagType::Float)
-	{
-		// Handle Error
-		return errFloat;
-	}
-	
-	if (flags[flagName] == nullptr)
+ 
+	if (!flags.contains(flagName) || flags.at(flagName) == nullptr)
         return errFloat;
 
-	return *static_cast<float*>(flags[flagName]);
+	if (flagTypes.at(flagName) != FlagType::Float)
+		return errFloat;
+	
+	return *static_cast<float*>(flags.at(flagName));
 }
 
 const std::string& Flags::GetString(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
-    if (flagTypes[flagName] != FlagType::String)
+    
+    if (!flags.contains(flagName) || flags.at(flagName) == nullptr)
+        return errString;
+
+    if (flagTypes.at(flagName) != FlagType::String)
     {
-        // Handle Error
+        std::cerr << "Type missmatch. Given flag " << flagName << " is not a string\n";
         return errString;
     }
-		
-		
-	if (flags[flagName] == nullptr)
-        return errString;
-    
-   	return *static_cast<std::string*>(flags[flagName]);
+	
+   	return *static_cast<std::string*>(flags.at(flagName));
 }
 
 const std::vector<std::string>& Flags::GetStringList(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
+
+    if (!flags.contains(flagName) || flags.at(flagName) == nullptr)
+        return errVecStr;
     	
-    if (flagTypes[flagName] != FlagType::StringList)
+    if (flagTypes.at(flagName) != FlagType::StringList)
     {
-       	// Handle Error
+        std::cerr << "Type missmatch. Given flag " << flagName << " is not a string list\n";
         return errVecStr;
     }
 		
-	if (flags[flagName] == nullptr)
-        return errVecStr;
-    
-    return *static_cast<std::vector<std::string>*>(flags[flagName]);
+    return *static_cast<std::vector<std::string>*>(flags.at(flagName));
 }
 
 const std::vector<int>& Flags::GetIntList(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 
-    if (flagTypes[flagName] != FlagType::IntList)
+    if (!flags.contains(flagName) || flags.at(flagName) == nullptr)
+        return errVecInt;
+
+    if (flagTypes.at(flagName) != FlagType::IntList)
 	{
-       	// Handle Error
+        std::cerr << "Type missmatch. Given flag " << flagName << " is not an int list\n";
         return errVecInt;
    	}
 		
-	if (flags[flagName] == nullptr)
-        return errVecInt;
-    
-   	return *static_cast<std::vector<int>*>(flags[flagName]);
+   	return *static_cast<std::vector<int>*>(flags.at(flagName));
 }
 
 const std::vector<float>& Flags::GetFloatList(std::string flagName)
 {
 	flagName.insert(0, 1, '-');
 
-    if (flagTypes[flagName] != FlagType::FloatList)
+    if (!flags.contains(flagName) || flags.at(flagName) == nullptr)
+        return errVecFloat;
+
+    if (flagTypes.at(flagName) != FlagType::FloatList)
     {
-       	// Handle Error
+        std::cerr << "Type missmatch. Given flag " << flagName << " is not a float list\n";
         return errVecFloat;
     }
-		
-		
-	if (flags[flagName] == nullptr)
-        return errVecFloat;
     
-    return *static_cast<std::vector<float>*>(flags[flagName]);
+    return *static_cast<std::vector<float>*>(flags.at(flagName));
 }
 
 Flags::~Flags()
@@ -178,8 +192,9 @@ void CLIParser::AddFlag(std::string flagName, FlagType flagType)
 
 	if (flagsAndTypes.contains(flagName))
 		return;
-	
+
 	flagsAndTypes[flagName] = flagType;
+    resultFlags[flagName] = nullptr;
 }
 
 void CLIParser::BindFlag(std::string flagName, std::string bindTo)
@@ -201,61 +216,57 @@ void CLIParser::RemoveFlag(std::string flagName)
 		return;
 	
 	flagsAndTypes.erase(flagName);
+    resultFlags.erase(flagName);
 }
 
 const Flags CLIParser::Parse()
 {
-	//for (auto& i : flagsAndTypes)
-	//	std::cout << i.first << ": " << int(i.second) << "\n";	
-
-	for (int index = 1; index < entryCount; index++)
-	{
+    for (int index = 1; index < entryCount; index++)
+    {
 		std::string entry = cliEntries[index];
 		
 		if (entry[0] == '-')
 			HandleFlagEntry(index);
 	}
 
-	Flags toReturn;
-	toReturn.SetUp(resultFlags, flagsAndTypes);
-
-	return toReturn;
+	return Flags{resultFlags, flagsAndTypes};
 }
 
 void CLIParser::HandleFlagEntry(int index)
 {
-    std::string flag { cliEntries[index] };
+    const std::string& flag { cliEntries[index] };
 
-	if (resultFlags.contains(cliEntries[index]))
-		return;
 
     if (boundFlags.contains(flag))
     {
         flagsAndTypes[flag] = flagsAndTypes[boundFlags[flag]];
         resultFlags[boundFlags[flag]] = CLIParamToObject(index);
         flagsAndTypes.erase(flag);
+
+        return;
     }
-    else
-        resultFlags[flag] = CLIParamToObject(index);
+
+    if (!resultFlags.contains(flag))
+        Error({"Given flag ", flag, " has not been registered."}, __LINE__);
+        
+    resultFlags[flag] = CLIParamToObject(index);
 }
 
 void* CLIParser::CLIParamToObject(int index)
 {
-	if (index+1 == entryCount)
-		return HandleCliBool(index);
+    const std::string& flag { cliEntries[index] };
+    const FlagType type { flagsAndTypes.at(flag) };
 
-	char toIdentify = cliEntries[index+1][0];
+    if (std::find(numTypes.begin(), numTypes.end(), type) != numTypes.end())
+        return HandleCliNumber(index);
+    if (std::find(listType.begin(), listType.end(), type) != listType.end())
+        return HandleCliList(index);
+    if (type == FlagType::String)
+        return HandleCliString(index);
+    if (type == FlagType::Bool)
+        return HandleCliBool(index);
 
-	if (toIdentify == '[')
-		return HandleCliList(index);
-	if (isdigit(toIdentify))
-		return HandleCliNumber(index);
-	if (std::isalpha(toIdentify))
-		return HandleCliString(index);
-	if (cliEntries[index+1][0] == '-')
-		return HandleCliBool(index);
-	
-	std::cout << "An Error Occured During the CLI Parsing Process\n";
+    Error({"Can't identify parameter type from entry ", cliEntries[index+1], " for ", cliEntries[index]}, __LINE__);
 	return nullptr;
 }
 
@@ -263,62 +274,40 @@ void* CLIParser::HandleCliList(int index)
 {
 	std::string flagName = cliEntries[index];
 
-    	if (flagsAndTypes[flagName] != FlagType::FloatList &&
-		flagsAndTypes[flagName] != FlagType::IntList &&
-		flagsAndTypes[flagName] != FlagType::StringList)
-    	{
-        	// Handle Error
-        	return nullptr;
-    	}
+    if (std::find(listType.begin(), listType.end(), flagsAndTypes.at(flagName)) == listType.end())
+    {
+        Error({"Type missmatch. Given flag ", flagName, " is not a list."}, __LINE__);
+        return nullptr;
+    }
 
-	
-	//if (isdigit(cliEntries[index+1][1]))
-	//	return HandleIntList(index);
-	//return HandleStringList(index);
-	
-	if (flagsAndTypes[flagName] == FlagType::FloatList)
+	if (flagsAndTypes.at(flagName) == FlagType::FloatList)
 		return HandleFloatList(index);
-	if (flagsAndTypes[flagName] == FlagType::IntList)
+	if (flagsAndTypes.at(flagName) == FlagType::IntList)
 		return HandleIntList(index);
-	if (flagsAndTypes[flagName] == FlagType::StringList)
+	if (flagsAndTypes.at(flagName) == FlagType::StringList)
 		return HandleStringList(index);
 
-	// Handle Error
 	return nullptr;
 }
 
 std::vector<int>* CLIParser::HandleIntList(int index)
 {
 	std::vector<int>* resultVec = new std::vector<int>();
+    index++;
 
-	std::stringstream ss;
+    for (; index < entryCount; index++)
+    {
+        const std::string_view entry { cliEntries[index] };
 
-	index++;
-	std::string entry = cliEntries[index];
-	entry.erase(0, 1);
-	
-	while (entry.back() != ']')
-	{
-		if (entry.back() == ',')
-		{
-			entry.pop_back();
-			ss << entry;
-			resultVec->push_back(std::stoi(ss.str()));
-			ss.str(std::string());
-			continue;
-		}
+        if (entry.starts_with('-'))
+            break;
 
-		index++;
-		entry = cliEntries[index];
-	}
-
-	entry.pop_back();
-	ss << entry;
-	
-	if (ss.str().empty())
-		return resultVec;
-
-	resultVec->push_back(std::stoi(ss.str()));
+        try { resultVec->emplace_back(std::stoi(entry.data())); }
+        catch (const std::exception& e)
+        {
+            Error("You probably wrote one of the integer values wrong.", __LINE__);
+        }
+    }
 
 	return resultVec;
 }
@@ -326,35 +315,21 @@ std::vector<int>* CLIParser::HandleIntList(int index)
 std::vector<float>* CLIParser::HandleFloatList(int index)
 {
 	std::vector<float>* resultVec = new std::vector<float>();
+    index++;
 
-	std::stringstream ss;
+    for (; index < entryCount; index++)
+    {
+        const std::string_view entry { cliEntries[index] };
 
-	index++;
-	std::string entry = cliEntries[index];
-	entry.erase(0, 1);
-	
-	while (entry.back() != ']')
-	{
-		if (entry.back() == ',')
-		{
-			entry.pop_back();
-			ss << entry;
-			resultVec->push_back(std::stof(ss.str()));
-			ss.str(std::string());
-			continue;
-		}
+        if (entry.starts_with('-'))
+            break;
 
-		index++;
-		entry = cliEntries[index];
-	}
-
-	entry.pop_back();
-	ss << entry;
-	
-	if (ss.str().empty())
-		return resultVec;
-
-	resultVec->push_back(std::stof(ss.str()));
+        try { resultVec->emplace_back(std::stof(entry.data())); }
+        catch (const std::exception& e)
+        {
+            Error("Probably you made a misspell somewhere writing a float value.", __LINE__);
+        }
+    }
 
 	return resultVec;
 }
@@ -362,41 +337,17 @@ std::vector<float>* CLIParser::HandleFloatList(int index)
 std::vector<std::string>* CLIParser::HandleStringList(int index)
 {
 	std::vector<std::string>* resultVec = new std::vector<std::string>();
+    index++;
 
-	std::stringstream ss;
-
-	index++;
-	std::string entry = cliEntries[index];
-	entry.erase(0, 1);
-
-	while (entry.back() != ']')
-	{
-		if (entry.back() == ',')
-		{
-			entry.pop_back();	
-			ss << entry;
-			resultVec->push_back(ss.str());
-            //std::cout << "\n" << ss.str();
-			ss.str(std::string());
-			continue;
-		}
-
-		index++;
-		entry = cliEntries[index];
-	}
-
-    if (entry != "]")
+    for (; index < entryCount; index++)
     {
-        entry.pop_back();
-	    ss << entry;
-    }	
-    else
-        ss << cliEntries[index-1];
-	
-	if (ss.str().empty())
-		return resultVec;
+        const std::string_view entry { cliEntries[index] };
 
-	resultVec->push_back(ss.str());
+        if (entry.starts_with('-'))
+            break;
+
+        resultVec->emplace_back(entry.data());
+    }
 
 	return resultVec;
 }
@@ -406,7 +357,7 @@ void* CLIParser::HandleCliNumber(int index)
 	if (flagsAndTypes[cliEntries[index]] != FlagType::Int && 
 		flagsAndTypes[cliEntries[index]] != FlagType::Float)
 	{
-		// Handle Error
+        Error({"Type missmatch. Given flag ", cliEntries[index], " is not a number."}, __LINE__);
 		return nullptr;
 	}
 	
@@ -432,7 +383,7 @@ void* CLIParser::HandleCliNumber(int index)
 	
 	if (ss.str().empty())
 	{
-		// Handle Error
+        Error({"Can't construct number from, well, nothing. ", "(After ", cliEntries[index-1], ")"}, __LINE__);
 		return nullptr;
 	}
 	
@@ -446,7 +397,7 @@ std::string* CLIParser::HandleCliString(int index)
 {	
 	if (flagsAndTypes[cliEntries[index]] != FlagType::String)
 	{
-		// Handle Error
+        Error({"Type missmatch. Given flag ", cliEntries[index], " is not a string."}, __LINE__);
 		return nullptr;
 	}
 
@@ -456,4 +407,19 @@ std::string* CLIParser::HandleCliString(int index)
 bool* CLIParser::HandleCliBool(int index)
 {
 	return new bool(true);
+}
+
+void CLIParser::Error(const std::vector<std::string>& messages, int line)
+{
+    std::stringstream ss;
+    for (const auto& msg : messages)
+        ss << msg;
+    std::cerr << "[ERROR][CLIParser::Error](CLIParser/CLIParser.cpp:" << line << ") >>> " << ss.str() << '\n';
+    exit(1);
+}
+
+void CLIParser::Error(const std::string& message, int line)
+{
+    std::cerr << "[ERROR][CLIParser::Error](CLIParser/CLIParser.cpp:" << line << ") >>> " << message << '\n';
+    exit(1);
 }

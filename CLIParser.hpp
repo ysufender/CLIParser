@@ -1,4 +1,4 @@
-#pragma once
+#pragma onceclipa
 
 #include <cctype>
 #include <unordered_map>
@@ -18,8 +18,6 @@ enum class FlagType
 
 class Flags 
 {
-	friend class CLIParser;
-
 	private:
 		std::unordered_map<std::string, void*> flags;
 		std::unordered_map<std::string, FlagType> flagTypes;
@@ -33,10 +31,10 @@ class Flags
 		const std::vector<int>& GetIntList(std::string flagName);
 		const std::vector<float>& GetFloatList(std::string flagName);
 
+        Flags() = delete;
+        Flags(Flags&) = delete;
+		Flags(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet);
         ~Flags();
-
-    private:
-		void SetUp(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet);
 };
 
 class CLIParser
@@ -64,4 +62,7 @@ class CLIParser
 		void* HandleCliNumber(int index);
 		std::string* HandleCliString(int index);
 		bool* HandleCliBool(int index);
+        
+        void Error(const std::vector<std::string>& messages, int line);
+        void Error(const std::string& message, int line);
 };

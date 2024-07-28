@@ -86,12 +86,16 @@ As for primitives:
 
 `exe -b -str1 string -str2 "string 2" -str3 'string 3' -i 69 -f 42`
 
-As for lists:
+~As for lists:~
 
-`exe -floatL [5.4, 358, 6.5] -strL [str, "List", 'for you'] -intL [5, 4]`
+~`exe -floatL [5.4, 358, 6.5] -strL [str, "List", 'for you'] -intL [5, 4]`~
 
-Be aware that the square brackets must be attached to the first and last element. Also every element has to have the comma symbol right next to them with a space away from the next one.
-So `[4,4,3]`, `[ List ]`, `[5,4 , 3]` will cause you trouble.
+~Be aware that the square brackets must be attached to the first and last element. Also every element has to have the comma symbol right next to them with a space away from the next one.
+So `[4,4,3]`, `[ List ]`, `[5,4 , 3]` will cause you trouble.~
+
+Why did I make the lists like that in the first place? I don't even know myself. Now you can just do:
+
+`exe -floatL 5.4 .5 .4 7 360 -strL yup "this" is_a 'string list' -intL 15 20 88`
 
 
 ## Binding Flags
@@ -135,8 +139,10 @@ Fun Fact: If you try to `flags.GetBool("h")` you'll always get `false`. That's b
 
 ## NFAQ (Not so Frequently Asked Questions)
 
-Q: Can I do "[ 5, ]" for an integer list?\
-A: For God's sake NO!
+~Q: Can I do "[ 5, ]" for an integer list?\
+A: For God's sake NO!~
+Q: You got rid of that stupid list syntax? \
+A: I absolutely did.
 
 Q: How are you able to think of a solution that is soooo ugly?\
 A: Natural talent.
