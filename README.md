@@ -11,22 +11,18 @@ Simply clone the repository by
 
 then you can either use
 
-`./build.ps1`
+`./build.ps1` or `./build.sh`
 
 and create an executable named `CLIParser.exe` at `build/Debug` to try it out by using `debug.cpp`
 
 or you can do
 
-`./publish.ps1`
+`./publish.ps1` or `./publish.sh`
 
-and create the static library `libCLIParser.a` and `CLIParser.hpp` at `build/Release`. It also copies them to a directory named `test`. That's all. Thanks.
+and create the static library `libCLIParser.a`.
 
-
-> NOTE:
->   The powershell scripts contain plain ol' cmake invokes and nothing more. So you
->   can always use `cmake -S . -B build -G <your_choice> -DCMAKE_CXX_COMPILER=<your_choice> -DCMAKE_BUILD_TYPE=DebugTest && cmake --build build --config Debug`
->   for building with debug.cpp and `cmake -S . -B build -G <your_choice>-DCMAKE_CXX_COMPILER=<your_choice> -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release`
->   for publishing and generating the static library.
+Or you can just go and do `cmake blah blah blah -DCMAKE_BUILD_TYPE=DebugTest` to include `debug.cpp` and create an executable,
+Or yet again `cmake blah blah blah -DCMAKE_BUILD_TYPE=whateveryouwantking` to just compile it to a static lib.
 
 
 ## Adding/Removing Flags
