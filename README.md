@@ -27,14 +27,14 @@ Or yet again `cmake blah blah blah -DCMAKE_BUILD_TYPE=whateveryouwantking` to ju
 
 ## Adding/Removing Flags
 
-To use the CLIParser, we first use the `CLIParser` class.
+To use the CLIParser, we use the `CLIParser`. It's arguments are arguments, argument count and prefix used in cli.
 
 ```cpp
 #include "CLIParser.hpp"
 
 int main(int argc, char** args)
 {
-	CLIParser parser {args, argc};
+	CLIParser parser {args, argc, "--"};
 	parser.AddFlag("i", FlagType::Int);
 	parser.AddFlag("f", FlagType::Float);
 	parser.AddFlag("s", FlagType::String);
@@ -52,7 +52,7 @@ Voila! Now it's time to parse the command line and return our flags.
 
 int main(int argc, char** args)
 {
-	CLIParser parser {args, argc};
+	CLIParser parser {args, argc, "--"};
 	parser.AddFlag("i", FlagType::Int);
 	parser.AddFlag("f", FlagType::Float);
 	parser.AddFlag("s", FlagType::String);
@@ -75,6 +75,65 @@ int main(int argc, char** args)
 
 Yeah that's all to it.
 
+
+## Binding Flags
+
+Sometimes we might want to use both `-h` and `--help` for help flag. But we want them both to have the same value depending on usage. So what do we do? Yeah we bind them.
+Binding is a one way operation. You can bind a flag to another but can't (you can actually but I wouldn't suggest doing so) bind the binder one to the binded. Yeah.
+
+```cpp
+#include "CLIParser.hpp"
+
+int main(int argc, char** args)
+{
+	CLIParser parser {args, argc, "--"};
+	parser.AddFlag("help", FlagType::Bool);
+	parser.BindFlag("h", "help");
+}
+```
+
+Now, we binded the `--h` flag to `--help`. So whenever we do `exe --h`, the value of `--help` will be true.
+
+```cpp
+#include <iostream>
+
+#include "CLIParser.hpp"
+
+int main(int argc, char** args)
+{
+	CLIParser parser {args, argc, "--"};
+	parser.AddFlag("help", FlagType::Bool);
+	parser.BindFlag("h", "help");
+
+	Flags flags = parser.Parse();
+	bool help = flags.GetBool("help");
+
+	std::cout <<  "This shall print one if help is needed: " << help << '\n';
+}
+```
+
+Fun Fact: If you try to `flags.GetBool("h")` you'll always get `false`. That's because `h` is binded to `help` so actually there is no flag named `h`. That's all thanks.
+
+Another Fun Fact: You can change the prefix used for binded flags. `CLIParser` has another constructor that takes an argument named `boundPrefix`.
+
+```cpp
+
+#include "CLIParser.hpp"
+
+int main(int argc, char** args)
+{
+    CLIParser parser {args, argc, "--", "-"};   // now the bound flags will use `-` as prefix
+    parser.AddFlag("help", FlagType::Bool);
+    parser.BindFLag("h", "help");
+
+    Flags flags = parser.Parse();
+    bool help = flags.GetBool("help");
+	std::cout <<  "This shall print one if help is needed: " << help << '\n';
+}
+```
+
+Now the `-h` is bound to `--help` instead of `--h`. Pretty neat huh? (Just say yes)
+
   
 ## Passing Conventions
 
@@ -94,43 +153,9 @@ Why did I make the lists like that in the first place? I don't even know myself.
 `exe -floatL 5.4 .5 .4 7 360 -strL yup "this" is_a 'string list' -intL 15 20 88`
 
 
-## Binding Flags
+Fun Fact: I forgot that you can use hexadecimal with integers. Like:
 
-Sometimes we might want to use both `-h` and `-help` for help flag. But we want them both to have the same value depending on usage. So what do we do? Yeah we bind them.
-Binding is a one way operation. You can bind a flag to another but can't (you can actually but I wouldn't suggest doing so) bind the binder one to the binded. Yeah.
-
-```cpp
-#include "CLIParser.hpp"
-
-int main(int argc, char** args)
-{
-	CLIParser parser {args, argc};
-	parser.AddFlag("help", FlagType::Bool);
-	parser.BindFlag("h", "help");
-}
-```
-
-Now, we binded the `-h` flag to `-help`. So whenever we do `exe -h`, the value of `-help` will be true.
-
-```cpp
-#include <iostream>
-
-#include "CLIParser.hpp"
-
-int main(int argc, char** args)
-{
-	CLIParser parser {args, argc};
-	parser.AddFlag("help", FlagType::Bool);
-	parser.BindFlag("h", "help");
-
-	Flags flags = parser.Parse();
-	bool help = flags.GetBool("help");
-
-	std::cout <<  "This shall print one if help is needed: " << help << '\n';
-}
-```
-
-Fun Fact: If you try to `flags.GetBool("h")` you'll always get `false`. That's because `h` is binded to `help` so actually there is no flag named `h`. That's all thanks.
+`exe --int-list 0xFF 15 0x15 --straight-up-int 0x00`
 
 
 ## NFAQ (Not so Frequently Asked Questions)
@@ -151,3 +176,6 @@ A: Absolutely NO!
 
 Q: Why are you writing these docs and readmes that no one will read?\
 A: One day, I was sleeping. But Jesus, what a sleep! Then a pigeon came and said "You shall write thy docs and readmes". That day I started to write them.
+
+NQ: Please stop writing READMEs. \
+A: Nah.

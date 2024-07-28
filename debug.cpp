@@ -9,15 +9,24 @@ int main(int argc, char** args)
     //for (int i = 0; i < argc; i++)
     //std::cout << '\n' << args[i];
 
-	CLIParser parser { args, argc };
+	//CLIParser parser { args, argc, "--" };
+    CLIParser parser { args, argc, "--", "-" };
+
 	parser.AddFlag("bool", FlagType::Bool);
     parser.BindFlag("b", "bool");
+
 	parser.AddFlag("stringList", FlagType::StringList);
     parser.BindFlag("sl", "stringList");
+
 	parser.AddFlag("il", FlagType::IntList);
     parser.BindFlag("i", "il");
+
 	parser.AddFlag("fl", FlagType::FloatList);
     parser.BindFlag("f", "fl");
+
+    parser.AddFlag("long-long-flag", FlagType::Bool);
+    parser.BindFlag("llf", "long-long-flag");
+
 	Flags flags = parser.Parse();
 
     const auto& list = flags.GetStringList("stringList");
@@ -36,6 +45,9 @@ int main(int argc, char** args)
 
     if (flags.GetBool("bool"))
         std::cout << "I'm so booling rn\n";
+
+    if (flags.GetBool("long-long-flag"))
+        std::cout << "It works!!!!!!\n";
 	
 	return 1;
 }

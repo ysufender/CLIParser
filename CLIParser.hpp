@@ -21,6 +21,7 @@ class Flags
 	private:
 		std::unordered_map<std::string, void*> flags;
 		std::unordered_map<std::string, FlagType> flagTypes;
+        const std::string& prefix;
 	
 	public:
 		const bool& GetBool(std::string flagName);
@@ -33,35 +34,40 @@ class Flags
 
         Flags() = delete;
         Flags(Flags&) = delete;
-		Flags(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet);
+		Flags(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet, const std::string& flagPrefix);
         ~Flags();
 };
 
 class CLIParser
 {
 	private:
-		std::unordered_map<std::string, void*> resultFlags;
-		std::unordered_map<std::string, FlagType> flagsAndTypes;
-		char** cliEntries;
-		int entryCount;
+		std::unordered_map<std::string, void*> _resultFlags;
+		std::unordered_map<std::string, FlagType> _flagsAndTypes;
+		char** _cliEntries;
+		int _entryCount;
+        const std::string& _prefix;
+        const std::string& _boundPrefix;
 	
 	public:
-		CLIParser(char** cliInputsOfTheCaller, int count);
+		CLIParser(char** programCli, int count, const std::string& prefix);
+		CLIParser(char** programCli, int count, const std::string& prefix, const std::string& boundPrefix);
+        CLIParser() = delete;
+        CLIParser(CLIParser&) = delete;
+        CLIParser(CLIParser&&) = delete;
 		void AddFlag(std::string flagName, FlagType flagType);
-        void BindFlag(std::string flagName, std::string bindTo);
+        void BindFlag(std::string bindThis, std::string toThis);
 		void RemoveFlag(std::string flagName);
 		const Flags Parse();
 
 	private:
-		void HandleFlagEntry(int index);
-		void* CLIParamToObject(int index);
-		void* HandleCliList(int index);
-		std::vector<int>* HandleIntList(int index);
-		std::vector<float>* HandleFloatList(int index);
-		std::vector<std::string>* HandleStringList(int index);
-		void* HandleCliNumber(int index);
-		std::string* HandleCliString(int index);
-		bool* HandleCliBool(int index);
+		void* CLIParamToObject(int& index);
+		void* HandleCliList(int& index);
+		std::vector<int>* HandleIntList(int& index);
+		std::vector<float>* HandleFloatList(int& index);
+		std::vector<std::string>* HandleStringList(int& index);
+		void* HandleCliNumber(int& index);
+		std::string* HandleCliString(int& index);
+		bool* HandleCliBool(int& index);
         
         void Error(const std::vector<std::string>& messages, int line);
         void Error(const std::string& message, int line);
