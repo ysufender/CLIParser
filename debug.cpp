@@ -6,11 +6,12 @@
 
 int main(int argc, char** args)
 {	
+    using namespace CLIParser;
     //for (int i = 0; i < argc; i++)
     //std::cout << '\n' << args[i];
 
-	//CLIParser parser { args, argc, "--" };
-    CLIParser parser { args, argc, "--", "-" };
+	// Parser parser { args, argc, "--" };
+    Parser parser { args, argc, "--", "-" };
 
 	parser.AddFlag("bool", FlagType::Bool);
     parser.BindFlag("b", "bool");

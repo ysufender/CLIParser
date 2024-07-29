@@ -1,74 +1,88 @@
 #pragma onceclipa
 
-#include <cctype>
 #include <unordered_map>
 #include <string>
 #include <vector>
 
-enum class FlagType
+namespace CLIParser 
 {
-	Int = 0,
-	Float = 1,
-	String = 2,
-	IntList = 3,
-	FloatList = 4,
-	StringList = 5,
-	Bool = 6 
-};
+    union ReturnPtr
+    {
+        bool* boolVal;
+        int* intVal;
+        float* floatVal;
+        std::string* stringVal;
+        std::vector<std::string>* stringList;
+        std::vector<int>* intList;
+        std::vector<float>* floatList;
+    };
 
-class Flags 
-{
-	private:
-		std::unordered_map<std::string, void*> flags;
-		std::unordered_map<std::string, FlagType> flagTypes;
-        const std::string& prefix;
-	
-	public:
-		const bool& GetBool(std::string flagName);
-		const int& GetInt(std::string flagName);
-		const float& GetFloat(std::string flagName);
-		const std::string& GetString(std::string flagName);
-		const std::vector<std::string>& GetStringList(std::string flagName);
-		const std::vector<int>& GetIntList(std::string flagName);
-		const std::vector<float>& GetFloatList(std::string flagName);
+    enum class FlagType
+    {
+        Int = 0,
+        Float = 1,
+        String = 2,
+        IntList = 3,
+        FloatList = 4,
+        StringList = 5,
+        Bool = 6 
+    };
 
-        Flags() = delete;
-        Flags(Flags&) = delete;
-		Flags(std::unordered_map<std::string, void*> flagsToSet, std::unordered_map<std::string, FlagType> flagTypesToSet, const std::string& flagPrefix);
-        ~Flags();
-};
-
-class CLIParser
-{
-	private:
-		std::unordered_map<std::string, void*> _resultFlags;
-		std::unordered_map<std::string, FlagType> _flagsAndTypes;
-		char** _cliEntries;
-		int _entryCount;
-        const std::string& _prefix;
-        const std::string& _boundPrefix;
-	
-	public:
-		CLIParser(char** programCli, int count, const std::string& prefix);
-		CLIParser(char** programCli, int count, const std::string& prefix, const std::string& boundPrefix);
-        CLIParser() = delete;
-        CLIParser(CLIParser&) = delete;
-        CLIParser(CLIParser&&) = delete;
-		void AddFlag(std::string flagName, FlagType flagType);
-        void BindFlag(std::string bindThis, std::string toThis);
-		void RemoveFlag(std::string flagName);
-		const Flags Parse();
-
-	private:
-		void* CLIParamToObject(int& index);
-		void* HandleCliList(int& index);
-		std::vector<int>* HandleIntList(int& index);
-		std::vector<float>* HandleFloatList(int& index);
-		std::vector<std::string>* HandleStringList(int& index);
-		void* HandleCliNumber(int& index);
-		std::string* HandleCliString(int& index);
-		bool* HandleCliBool(int& index);
+    class Flags 
+    {
+        private:
+            const std::unordered_map<std::string, ReturnPtr>& _flags;
+            const std::unordered_map<std::string, FlagType>& _flagTypes;
+            const std::string& _prefix;
         
-        void Error(const std::vector<std::string>& messages, int line);
-        void Error(const std::string& message, int line);
-};
+        public:
+            const bool& GetBool(std::string flagName);
+            const int& GetInt(std::string flagName);
+            const float& GetFloat(std::string flagName);
+            const std::string& GetString(std::string flagName);
+            const std::vector<std::string>& GetStringList(std::string flagName);
+            const std::vector<int>& GetIntList(std::string flagName);
+            const std::vector<float>& GetFloatList(std::string flagName);
+
+            Flags() = delete;
+            Flags(Flags&) = delete;
+            Flags(const std::unordered_map<std::string, ReturnPtr>& flagsToSet, const std::unordered_map<std::string, FlagType>& flagTypesToSet, const std::string& flagPrefix);
+    };
+
+    class Parser
+    {
+        private:
+            std::unordered_map<std::string, ReturnPtr> _resultFlags;
+            std::unordered_map<std::string, FlagType> _flagsAndTypes;
+            char** _cliEntries;
+            int _entryCount;
+            const std::string& _prefix;
+            const std::string& _boundPrefix;
+
+            bool _dead = false;
+        
+        public:
+            Parser(char** programCli, int count, const std::string& prefix);
+            Parser(char** programCli, int count, const std::string& prefix, const std::string& boundPrefix);
+            Parser() = delete;
+            Parser(Parser&) = delete;
+            Parser(Parser&&) = delete;
+            void AddFlag(std::string flagName, FlagType flagType);
+            void BindFlag(std::string bindThis, std::string toThis);
+            void RemoveFlag(std::string flagName);
+            const Flags Parse();
+
+        private:
+            ReturnPtr CLIParamToObject(int& index);
+            ReturnPtr HandleCliList(int& index);
+            ReturnPtr HandleIntList(int& index);
+            ReturnPtr HandleFloatList(int& index);
+            ReturnPtr HandleStringList(int& index);
+            ReturnPtr HandleCliNumber(int& index);
+            ReturnPtr HandleCliString(int& index);
+            ReturnPtr HandleCliBool(int& index);
+            
+            void Error(const std::vector<std::string>& messages, int line);
+            void Error(const std::string& message, int line);
+    };
+}
