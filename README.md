@@ -34,7 +34,7 @@ To use the CLIParser, we use the `CLIParser`. It's arguments are arguments, argu
 
 int main(int argc, char** args)
 {
-	CLIParser parser {args, argc, "--"};
+	Parser parser {args, argc, "--"};
 	parser.AddFlag("i", FlagType::Int);
 	parser.AddFlag("f", FlagType::Float);
 	parser.AddFlag("s", FlagType::String);
@@ -52,7 +52,7 @@ Voila! Now it's time to parse the command line and return our flags.
 
 int main(int argc, char** args)
 {
-	CLIParser parser {args, argc, "--"};
+	Parser parser {args, argc, "--"};
 	parser.AddFlag("i", FlagType::Int);
 	parser.AddFlag("f", FlagType::Float);
 	parser.AddFlag("s", FlagType::String);
@@ -84,9 +84,11 @@ Binding is a one way operation. You can bind a flag to another but can't (you ca
 ```cpp
 #include "CLIParser.hpp"
 
+using namespace CLIParser;
+
 int main(int argc, char** args)
 {
-	CLIParser parser {args, argc, "--"};
+	Parser parser {args, argc, "--"};
 	parser.AddFlag("help", FlagType::Bool);
 	parser.BindFlag("h", "help");
 }
@@ -99,9 +101,11 @@ Now, we binded the `--h` flag to `--help`. So whenever we do `exe --h`, the valu
 
 #include "CLIParser.hpp"
 
+using namespace CLIParser;
+
 int main(int argc, char** args)
 {
-	CLIParser parser {args, argc, "--"};
+	Parser parser {args, argc, "--"};
 	parser.AddFlag("help", FlagType::Bool);
 	parser.BindFlag("h", "help");
 
@@ -120,9 +124,11 @@ Another Fun Fact: You can change the prefix used for binded flags. `CLIParser` h
 
 #include "CLIParser.hpp"
 
+using namespace CLIParser;
+
 int main(int argc, char** args)
 {
-    CLIParser parser {args, argc, "--", "-"};   // now the bound flags will use `-` as prefix
+    Parser parser {args, argc, "--", "-"};   // now the bound flags will use `-` as prefix
     parser.AddFlag("help", FlagType::Bool);
     parser.BindFLag("h", "help");
 
@@ -141,17 +147,9 @@ As for primitives:
 
 `exe -b -str1 string -str2 "string 2" -str3 'string 3' -i 69 -f 42`
 
-~As for lists:~
-
-~`exe -floatL [5.4, 358, 6.5] -strL [str, "List", 'for you'] -intL [5, 4]`~
-
-~Be aware that the square brackets must be attached to the first and last element. Also every element has to have the comma symbol right next to them with a space away from the next one.
-So `[4,4,3]`, `[ List ]`, `[5,4 , 3]` will cause you trouble.~
-
-Why did I make the lists like that in the first place? I don't even know myself. Now you can just do:
+And for lists:
 
 `exe -floatL 5.4 .5 .4 7 360 -strL yup "this" is_a 'string list' -intL 15 20 88`
-
 
 Fun Fact: I forgot that you can use hexadecimal with integers. Like:
 
