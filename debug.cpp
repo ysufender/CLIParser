@@ -7,9 +7,7 @@
 int main(int argc, char** args)
 {	
     using namespace CLIParser;
-    //for (int i = 0; i < argc; i++)
-    //std::cout << '\n' << args[i];
-
+    
 	// Parser parser { args, argc, "--" };
     Parser parser { args, argc, "--", "-" };
 
@@ -41,6 +39,7 @@ int main(int argc, char** args)
 	for (auto& it: flags.GetFloatList("fl")) {
         std::cout << "fl: " << it << "\n";
 	}
+
 
     std::cout << "There is " << (flags.GetIntList("i").size() == 0 ? "no" : "a") << " flag named `i`\n";;
 
