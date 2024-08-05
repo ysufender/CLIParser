@@ -210,7 +210,7 @@ namespace CLIParser
         }
     }
 
-    const bool& Flags::GetBool(std::string flagName)
+    const bool& Flags::GetBool(std::string flagName) const
     {
         if (!_flags.contains(flagName) || _flags.at(flagName).boolVal == nullptr)
             return errBool;
@@ -224,7 +224,7 @@ namespace CLIParser
         return *_flags.at(flagName).boolVal;
     }
 
-    const int& Flags::GetInt(std::string flagName)
+    const int& Flags::GetInt(std::string flagName) const
     {
         if (!_flags.contains(flagName) || _flags.at(flagName).intVal == nullptr)
             return errInt;
@@ -238,7 +238,7 @@ namespace CLIParser
         return *_flags.at(flagName).intVal;
     }
 
-    const float& Flags::GetFloat(std::string flagName)
+    const float& Flags::GetFloat(std::string flagName) const
     {
         if (!_flags.contains(flagName) || _flags.at(flagName).floatVal == nullptr)
             return errFloat;
@@ -249,7 +249,7 @@ namespace CLIParser
         return *_flags.at(flagName).floatVal;
     }
 
-    const std::string& Flags::GetString(std::string flagName)
+    const std::string& Flags::GetString(std::string flagName) const
     {
         if (!_flags.contains(flagName) || _flags.at(flagName).stringVal == nullptr)
             return errString;
@@ -263,7 +263,7 @@ namespace CLIParser
         return *_flags.at(flagName).stringVal;
     }
 
-    const std::vector<std::string>& Flags::GetStringList(std::string flagName)
+    const std::vector<std::string>& Flags::GetStringList(std::string flagName) const
     {
         if (!_flags.contains(flagName) || _flags.at(flagName).stringList == nullptr)
             return errVecStr;
@@ -277,7 +277,7 @@ namespace CLIParser
         return *_flags.at(flagName).stringList;
     }
 
-    const std::vector<int>& Flags::GetIntList(std::string flagName)
+    const std::vector<int>& Flags::GetIntList(std::string flagName) const
     {
         if (!_flags.contains(flagName) || _flags.at(flagName).intList == nullptr)
             return errVecInt;
@@ -291,7 +291,7 @@ namespace CLIParser
         return *_flags.at(flagName).intList;
     }
 
-    const std::vector<float>& Flags::GetFloatList(std::string flagName)
+    const std::vector<float>& Flags::GetFloatList(std::string flagName) const
     {
         if (!_flags.contains(flagName) || _flags.at(flagName).floatList == nullptr)
             return errVecFloat;

@@ -36,13 +36,13 @@ namespace CLIParser
 
         
         public:
-            const bool& GetBool(std::string flagName);
-            const int& GetInt(std::string flagName);
-            const float& GetFloat(std::string flagName);
-            const std::string& GetString(std::string flagName);
-            const std::vector<std::string>& GetStringList(std::string flagName);
-            const std::vector<int>& GetIntList(std::string flagName);
-            const std::vector<float>& GetFloatList(std::string flagName);
+            const bool& GetBool(std::string flagName) const;
+            const int& GetInt(std::string flagName) const;
+            const float& GetFloat(std::string flagName) const;
+            const std::string& GetString(std::string flagName) const;
+            const std::vector<std::string>& GetStringList(std::string flagName) const;
+            const std::vector<int>& GetIntList(std::string flagName) const;
+            const std::vector<float>& GetFloatList(std::string flagName) const;
 
             Flags() = delete;
             Flags(Flags&) = delete;
