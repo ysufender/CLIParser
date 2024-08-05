@@ -65,13 +65,13 @@ int main(int argc, char** args)
 	parser.AddFlag<FlagType::StringList>("sl");
 
 	Flags flags = parser.Parse();
-	int i = flags.GetInt("i");
-	float f = flags.GetFloat("f");
-	std::string s = flags.GetString("s");
-	bool b = flags.GetBool("b");
-	std::vector<int> = flags.GetIntList("il");
-	std::vector<float> = flags.GetFloatList("fl");
-	std::vector<string> = flags.GetStringList("sl");
+	int i = flags.GetFlag<FlagType::Int>("i");
+	float f = flags.GetFlag<FlagType::Float>("f");
+	std::string s = flags.GetFlag<FlagType::String>("s");
+	bool b = flags.GetFlag<FlagType::Bool>("b");
+	std::vector<int> = flags.GetFlag<FlagType::IntList>("il");
+	std::vector<float> = flags.GetFlag<FlagType::FloatList>("fl");
+	std::vector<string> = flags.GetFlag<FlagType::StringList>("sl");
 }
 ```
 
@@ -94,7 +94,7 @@ int main(int argc, char** args)
 
     Flags flags = parser.Parse();
 
-    std::cout << flags.GetString("someStr") << '\n';
+    std::cout << flags.GetFlag<FlagType::String>("someStr") << '\n';
 }
 
 // Outputs 'Yeah, defaults...' if not value is provided in CLI.
@@ -135,13 +135,13 @@ int main(int argc, char** args)
 	parser.BindFlag("h", "help");
 
 	Flags flags = parser.Parse();
-	bool help = flags.GetBool("help");
+	bool help = flags.GetFlag<FlagType::Bool>("help");
 
 	std::cout <<  "This shall print one if help is needed: " << help << '\n';
 }
 ```
 
-Fun Fact: If you try to `flags.GetBool("h")`, you'll get a nice, warm error message slapped into your face. That's because `h` flag doesn't exist, it was a CLI alias for `help`. 
+Fun Fact: If you try to `flags.GetFlag<FlagType::Bool>("h")`, you'll get a nice, warm error message slapped into your face. That's because `h` flag doesn't exist, it was a CLI alias for `help`. 
 
 Another Fun Fact: You can change the prefix used for binded flags. `Parser` class has another constructor that takes an argument named `boundPrefix`.
 
@@ -158,7 +158,7 @@ int main(int argc, char** args)
     parser.BindFLag("h", "help");
 
     Flags flags = parser.Parse();
-    bool help = flags.GetBool("help");
+    bool help = flags.GetFlag<FlagType::Bool>("help");
 	std::cout <<  "This shall print one if help is needed: " << help << '\n';
 }
 ```

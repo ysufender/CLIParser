@@ -30,13 +30,13 @@ void Test1(int argc, char** args)
     Flags flags = parser.Parse();
 
     std::cout << "TEST 1\n";
-    std::cout << std::boolalpha << flags.GetBool("b") << std::noboolalpha << '\n';
-    std::cout << flags.GetInt("i") << '\n';
-    std::cout << flags.GetFloat("f") << '\n';
-    std::cout << flags.GetString("s") << '\n';
-    PrintForeach(flags.GetStringList("sl"));
-    PrintForeach(flags.GetIntList("il"));
-    PrintForeach(flags.GetFloatList("fl"));
+    std::cout << std::boolalpha << flags.GetFlag<FlagType::Bool>("b") << std::noboolalpha << '\n';
+    std::cout << flags.GetFlag<FlagType::Int>("i") << '\n';
+    std::cout << flags.GetFlag<FlagType::Float>("f") << '\n';
+    std::cout << flags.GetFlag<FlagType::String>("s") << '\n';
+    PrintForeach(flags.GetFlag<FlagType::StringList>("sl"));
+    PrintForeach(flags.GetFlag<FlagType::IntList>("il"));
+    PrintForeach(flags.GetFlag<FlagType::FloatList>("fl"));
 }
 
 void Test2(int argc, char** args)
@@ -54,13 +54,13 @@ void Test2(int argc, char** args)
     Flags flags = parser.Parse();
 
     std::cout << "TEST 2\n";
-    std::cout << std::boolalpha << flags.GetBool("b") << std::noboolalpha << '\n';
-    std::cout << flags.GetInt("i") << '\n';
-    std::cout << flags.GetFloat("f") << '\n';
-    std::cout << flags.GetString("s") << '\n';
-    PrintForeach(flags.GetStringList("sl"));
-    PrintForeach(flags.GetIntList("il"));
-    PrintForeach(flags.GetFloatList("fl"));
+    std::cout << std::boolalpha << flags.GetFlag<FlagType::Bool>("b") << std::noboolalpha << '\n';
+    std::cout << flags.GetFlag<FlagType::Int>("i") << '\n';
+    std::cout << flags.GetFlag<FlagType::Float>("f") << '\n';
+    std::cout << flags.GetFlag<FlagType::String>("s") << '\n';
+    PrintForeach(flags.GetFlag<FlagType::StringList>("sl"));
+    PrintForeach(flags.GetFlag<FlagType::IntList>("il"));
+    PrintForeach(flags.GetFlag<FlagType::FloatList>("fl"));
 }
 
 int main(int argc, char** args)

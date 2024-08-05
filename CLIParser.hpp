@@ -69,13 +69,24 @@ namespace CLIParser
 
         
         public:
-            const bool& GetBool(std::string flagName) const;
-            const int& GetInt(std::string flagName) const;
-            const float& GetFloat(std::string flagName) const;
-            const std::string& GetString(std::string flagName) const;
-            const std::vector<std::string>& GetStringList(std::string flagName) const;
-            const std::vector<int>& GetIntList(std::string flagName) const;
-            const std::vector<float>& GetFloatList(std::string flagName) const;
+            template<FlagType F>
+                requires flaggable<determineVType<F>, F>
+            const determineVType<F>& GetFlag(const std::string& flagName) const
+            {
+                if(!_flags.contains(flagName))
+                {
+                    std::cerr << "[ERROR][CLIParser::Error](CLIParser/CLIParser.hpp:" << __LINE__  << ") >>> Given flag " << flagName << " does not exist.\n";
+                    exit(1);
+                }
+
+                if(_flagTypes.at(flagName) != F)
+                {
+                    std::cerr << "[ERROR][CLIParser::Error](CLIParser/CLIParser.hpp:" << __LINE__  << ") >>> Type missmatch. Given flag " << flagName << " is not matching with flag's value.\n";
+                    exit(1);
+                }
+
+                return *reinterpret_cast<determineVType<F>*>(_flags.at(flagName).intVal);
+            }
 
             Flags() = delete;
             Flags(Flags&) = delete;
