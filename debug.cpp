@@ -1,53 +1,73 @@
+#include <ios>
 #include <iostream>
 
 #include "CLIParser.hpp"
 
 // Try something
+    
+using namespace CLIParser;
+
+void PrintForeach(const auto& container)
+{
+    std::cout << '[';
+    for (const auto& val : container)
+        std::cout << val << ',';
+    std::cout << "]\n";
+}
+
+void Test1(int argc, char** args)
+{
+    Parser parser { args, argc, "--", "-" };
+
+    parser.AddFlag<FlagType::Bool>("b");
+    parser.AddFlag<FlagType::Int>("i");
+    parser.AddFlag<FlagType::Float>("f");
+    parser.AddFlag<FlagType::String>("s");
+    parser.AddFlag<FlagType::StringList>("sl");
+    parser.AddFlag<FlagType::IntList>("il");
+    parser.AddFlag<FlagType::FloatList>("fl");
+
+    Flags flags = parser.Parse();
+
+    std::cout << "TEST 1\n";
+    std::cout << std::boolalpha << flags.GetBool("b") << std::noboolalpha << '\n';
+    std::cout << flags.GetInt("i") << '\n';
+    std::cout << flags.GetFloat("f") << '\n';
+    std::cout << flags.GetString("s") << '\n';
+    PrintForeach(flags.GetStringList("sl"));
+    PrintForeach(flags.GetIntList("il"));
+    PrintForeach(flags.GetFloatList("fl"));
+}
+
+void Test2(int argc, char** args)
+{
+    Parser parser { args, argc, "--", "-" };
+
+    parser.AddFlag<FlagType::Bool>("b", true);
+    parser.AddFlag<FlagType::Int>("i", 42);
+    parser.AddFlag<FlagType::Float>("f", 0.48);
+    parser.AddFlag<FlagType::String>("s", "Testing Things");
+    parser.AddFlag<FlagType::StringList>("sl", { "Hello", "World" });
+    parser.AddFlag<FlagType::IntList>("il", { 5, 4, 32 });
+    parser.AddFlag<FlagType::FloatList>("fl", { 4.152, 87.785 });
+
+    Flags flags = parser.Parse();
+
+    std::cout << "TEST 2\n";
+    std::cout << std::boolalpha << flags.GetBool("b") << std::noboolalpha << '\n';
+    std::cout << flags.GetInt("i") << '\n';
+    std::cout << flags.GetFloat("f") << '\n';
+    std::cout << flags.GetString("s") << '\n';
+    PrintForeach(flags.GetStringList("sl"));
+    PrintForeach(flags.GetIntList("il"));
+    PrintForeach(flags.GetFloatList("fl"));
+}
 
 int main(int argc, char** args)
 {	
-    using namespace CLIParser;
-    
-	// Parser parser { args, argc, "--" };
-    Parser parser { args, argc, "--", "-" };
+    Test1(argc, args);
+    std::cout << "\n\n";
+    Test2(argc, args);
 
-	parser.AddFlag("bool", FlagType::Bool);
-    parser.BindFlag("b", "bool");
-
-	parser.AddFlag("stringList", FlagType::StringList);
-    parser.BindFlag("sl", "stringList");
-
-	parser.AddFlag("il", FlagType::IntList);
-    parser.BindFlag("i", "il");
-
-	parser.AddFlag("fl", FlagType::FloatList);
-    parser.BindFlag("f", "fl");
-
-    parser.AddFlag("long-long-flag", FlagType::Bool);
-    parser.BindFlag("llf", "long-long-flag");
-
-	Flags flags = parser.Parse();
-
-    const auto& list = flags.GetStringList("stringList");
-
-	for (auto& it: list) {
-        std::cout << "stringList: \"" << it << "\"\n";
-	}
-	for (auto& it: flags.GetIntList("il")) {
-        std::cout << "il: " << it << "\n";
-	}
-	for (auto& it: flags.GetFloatList("fl")) {
-        std::cout << "fl: " << it << "\n";
-	}
-
-
-    std::cout << "There is " << (flags.GetIntList("i").size() == 0 ? "no" : "a") << " flag named `i`\n";;
-
-    if (flags.GetBool("bool"))
-        std::cout << "I'm so booling rn\n";
-
-    if (flags.GetBool("long-long-flag"))
-        std::cout << "It works!!!!!!\n";
-	
 	return 1;
 }

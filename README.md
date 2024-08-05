@@ -1,7 +1,6 @@
 # CLIParser
 
-You need to pass cool things to the CLI but not too cool (that makes it casual I think)? It supports integers, floats, strings, bools and a couple of lists.
-
+A simple CLI parser. Simple data types and simple operations are allowed, for simple usages.
 
 ## Installation
 
@@ -19,7 +18,7 @@ or you can do
 
 `./publish.ps1` or `./publish.sh`
 
-and create the static library `libCLIParser.a`.
+and create the static library `libCLIParser.a`, which you can link to your projects and use.
 
 Or you can just go and do `cmake blah blah blah -DCMAKE_BUILD_TYPE=DebugTest` to include `debug.cpp` and create an executable,
 Or yet again `cmake blah blah blah -DCMAKE_BUILD_TYPE=whateveryouwantking` to just compile it to a static lib.
@@ -27,21 +26,23 @@ Or yet again `cmake blah blah blah -DCMAKE_BUILD_TYPE=whateveryouwantking` to ju
 
 ## Adding/Removing Flags
 
-To use the CLIParser, we use the `CLIParser`. It's arguments are arguments, argument count and prefix used in cli.
+The `Parser` class does all the work for us. Simply pass the `args`, `argc`, and the prefix of your choice to the constructor, then use the `AddFlag` method.
 
 ```cpp
 #include "CLIParser.hpp"
 
+using namespace CLIParser;
+
 int main(int argc, char** args)
 {
 	Parser parser {args, argc, "--"};
-	parser.AddFlag("i", FlagType::Int);
-	parser.AddFlag("f", FlagType::Float);
-	parser.AddFlag("s", FlagType::String);
-	parser.AddFlag("b", FlagType::Bool);
-	parser.AddFlag("il", FlagType::IntList);
-	parser.AddFlag("fl", FlagType::FloatList);
-	parser.AddFlag("sl", FlagType::StringList);
+	parser.AddFlag<FlagType::Int>("i");
+	parser.AddFlag<FlagType::Float>("f");
+	parser.AddFlag<FlagType::String>("s");
+	parser.AddFlag<FlagType::Bool>("b");
+	parser.AddFlag<FlagType::IntList>("il");
+	parser.AddFlag<FlagType::FloatList>("fl");
+	parser.AddFlag<FlagType::StringList>("sl");
 }
 ```
 
@@ -50,16 +51,18 @@ Voila! Now it's time to parse the command line and return our flags.
 ```cpp
 #include "CLIParser.hpp"
 
+using namespace CLIParser;
+
 int main(int argc, char** args)
 {
 	Parser parser {args, argc, "--"};
-	parser.AddFlag("i", FlagType::Int);
-	parser.AddFlag("f", FlagType::Float);
-	parser.AddFlag("s", FlagType::String);
-	parser.AddFlag("b", FlagType::Bool);
-	parser.AddFlag("il", FlagType::IntList);
-	parser.AddFlag("fl", FlagType::FloatList);
-	parser.AddFlag("sl", FlagType::StringList);
+	parser.AddFlag<FlagType::Int>("i");
+	parser.AddFlag<FlagType::Float>("f");
+	parser.AddFlag<FlagType::String>("s");
+	parser.AddFlag<FlagType::Bool>("b");
+	parser.AddFlag<FlagType::IntList>("il");
+	parser.AddFlag<FlagType::FloatList>("fl");
+	parser.AddFlag<FlagType::StringList>("sl");
 
 	Flags flags = parser.Parse();
 	int i = flags.GetInt("i");
@@ -70,10 +73,32 @@ int main(int argc, char** args)
 	std::vector<float> = flags.GetFloatList("fl");
 	std::vector<string> = flags.GetStringList("sl");
 }
-
 ```
 
-Yeah that's all to it.
+Be aware that with this way, all the flags will be set to the default constructed values of their types. If you want to specify a default value, see the next header.
+
+
+## Default Values
+
+Specifying default values is easy, just add the value as another argument to `AddFlag` method. The template metaprogramming dark magic will handle the rest.
+
+```cpp
+#include "CLIParser.hpp"
+
+using namespace CLIParser;
+
+int main(int argc, char** args)
+{
+	Parser parser {args, argc, "--"};
+	parser.AddFlag<FlagType::String>("someStr", "Yeah, defaults...");
+
+    Flags flags = parser.Parse();
+
+    std::cout << flags.GetString("someStr") << '\n';
+}
+
+// Outputs 'Yeah, defaults...' if not value is provided in CLI.
+```
 
 
 ## Binding Flags
@@ -89,7 +114,7 @@ using namespace CLIParser;
 int main(int argc, char** args)
 {
 	Parser parser {args, argc, "--"};
-	parser.AddFlag("help", FlagType::Bool);
+	parser.AddFlag<FlagType::Bool>("help");
 	parser.BindFlag("h", "help");
 }
 ```
@@ -106,7 +131,7 @@ using namespace CLIParser;
 int main(int argc, char** args)
 {
 	Parser parser {args, argc, "--"};
-	parser.AddFlag("help", FlagType::Bool);
+	parser.AddFlag<FlagType::Bool>("help");
 	parser.BindFlag("h", "help");
 
 	Flags flags = parser.Parse();
@@ -116,9 +141,9 @@ int main(int argc, char** args)
 }
 ```
 
-Fun Fact: If you try to `flags.GetBool("h")` you'll always get `false`. That's because `h` is binded to `help` so actually there is no flag named `h`. That's all thanks.
+Fun Fact: If you try to `flags.GetBool("h")`, you'll get a nice, warm error message slapped into your face. That's because `h` flag doesn't exist, it was a CLI alias for `help`. 
 
-Another Fun Fact: You can change the prefix used for binded flags. `CLIParser` has another constructor that takes an argument named `boundPrefix`.
+Another Fun Fact: You can change the prefix used for binded flags. `Parser` class has another constructor that takes an argument named `boundPrefix`.
 
 ```cpp
 
@@ -129,7 +154,7 @@ using namespace CLIParser;
 int main(int argc, char** args)
 {
     Parser parser {args, argc, "--", "-"};   // now the bound flags will use `-` as prefix
-    parser.AddFlag("help", FlagType::Bool);
+    parser.AddFlag<FlagType::Bool>("help");
     parser.BindFLag("h", "help");
 
     Flags flags = parser.Parse();
@@ -160,6 +185,7 @@ Fun Fact: I forgot that you can use hexadecimal with integers. Like:
 
 ~Q: Can I do "[ 5, ]" for an integer list?\
 A: For God's sake NO!~
+
 Q: You got rid of that stupid list syntax? \
 A: I absolutely did.
 

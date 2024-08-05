@@ -198,6 +198,8 @@ namespace Handlers
 
 namespace CLIParser
 {
+    using namespace Handlers;
+
     Flags::Flags(const std::unordered_map<std::string, ReturnPtr>& flagsToSet, const std::unordered_map<std::string, FlagType>& flagTypesToSet, const std::string_view prefix)
     {
         for (const auto& [flag, returnPtr] : flagsToSet)
@@ -212,95 +214,77 @@ namespace CLIParser
 
     const bool& Flags::GetBool(std::string flagName) const
     {
-        if (!_flags.contains(flagName) || _flags.at(flagName).boolVal == nullptr)
-            return errBool;
+        if (!_flags.contains(flagName))
+            Error({"Given flag ", flagName, " does not exist.\n"}, __LINE__);
 
         if (_flagTypes.at(flagName) != FlagType::Bool)
-        {
-            std::cerr << "Type missmatch. Given flag " << flagName << " is not a bool\n";
-            return errBool;
-        }
+            Error({"Type missmatch. Given flag ", flagName, " is not a bool\n"}, __LINE__);
         
         return *_flags.at(flagName).boolVal;
     }
 
     const int& Flags::GetInt(std::string flagName) const
     {
-        if (!_flags.contains(flagName) || _flags.at(flagName).intVal == nullptr)
-            return errInt;
+        if (!_flags.contains(flagName))
+            Error({"Given flag ", flagName, " does not exist.\n"}, __LINE__);
 
         if (_flagTypes.at(flagName) != FlagType::Int)
-        {
-            std::cerr << "Type missmatch. Given flag " << flagName << " is not an int\n";
-            return errInt;
-        }
+            Error({"Type missmatch. Given flag ", flagName, " is not an int\n"}, __LINE__);
             
         return *_flags.at(flagName).intVal;
     }
 
     const float& Flags::GetFloat(std::string flagName) const
     {
-        if (!_flags.contains(flagName) || _flags.at(flagName).floatVal == nullptr)
-            return errFloat;
+        if (!_flags.contains(flagName))
+            Error({"Given flag ", flagName, " does not exist.\n"}, __LINE__);
 
         if (_flagTypes.at(flagName) != FlagType::Float)
-            return errFloat;
+            Error({"Type missmatch. Given flag ", flagName, " is not a float\n"}, __LINE__);
         
         return *_flags.at(flagName).floatVal;
     }
 
     const std::string& Flags::GetString(std::string flagName) const
     {
-        if (!_flags.contains(flagName) || _flags.at(flagName).stringVal == nullptr)
-            return errString;
+        if (!_flags.contains(flagName))
+            Error({"Given flag ", flagName, " does not exist.\n"}, __LINE__);
 
         if (_flagTypes.at(flagName) != FlagType::String)
-        {
-            std::cerr << "Type missmatch. Given flag " << flagName << " is not a string\n";
-            return errString;
-        }
+            Error({"Type missmatch. Given flag ", flagName, " is not a string\n"}, __LINE__);
         
         return *_flags.at(flagName).stringVal;
     }
 
     const std::vector<std::string>& Flags::GetStringList(std::string flagName) const
     {
-        if (!_flags.contains(flagName) || _flags.at(flagName).stringList == nullptr)
-            return errVecStr;
+        if (!_flags.contains(flagName))
+            Error({"Given flag ", flagName, " does not exist.\n"}, __LINE__);
             
         if (_flagTypes.at(flagName) != FlagType::StringList)
-        {
-            std::cerr << "Type missmatch. Given flag " << flagName << " is not a string list\n";
-            return errVecStr;
-        }
+            Error({"Type missmatch. Given flag ", flagName, " is not a string list.\n"}, __LINE__);
             
         return *_flags.at(flagName).stringList;
     }
 
     const std::vector<int>& Flags::GetIntList(std::string flagName) const
     {
-        if (!_flags.contains(flagName) || _flags.at(flagName).intList == nullptr)
-            return errVecInt;
+        if (!_flags.contains(flagName))
+            Error({"Given flag ", flagName, " does not exist.\n"}, __LINE__);
 
         if (_flagTypes.at(flagName) != FlagType::IntList)
-        {
-            std::cerr << "Type missmatch. Given flag " << flagName << " is not an int list\n";
-            return errVecInt;
-        }
+            Error({"Type missmatch. Given flag ", flagName, " is not an int list.\n"}, __LINE__);
             
         return *_flags.at(flagName).intList;
     }
 
     const std::vector<float>& Flags::GetFloatList(std::string flagName) const
     {
-        if (!_flags.contains(flagName) || _flags.at(flagName).floatList == nullptr)
-            return errVecFloat;
+        if (!_flags.contains(flagName))
+            Error({"Given flag ", flagName, " does not exist.\n"}, __LINE__);
 
         if (_flagTypes.at(flagName) != FlagType::FloatList)
-        {
-            std::cerr << "Type missmatch. Given flag " << flagName << " is not a float list\n";
-            return errVecFloat;
-        }
+            Error({"Type missmatch. Given flag ", flagName, " is not a float list.\n"}, __LINE__);
         
         return *_flags.at(flagName).floatList;
     }
@@ -338,12 +322,10 @@ namespace CLIParser
         }
     }
 
+
     //
     // CLIParser Implementation
     //
-
-    using namespace Handlers;
-
     Parser::Parser(char** programCli, int count, std::string_view prefix) 
         : _prefix(prefix), _boundPrefix(prefix) 
     {
@@ -362,20 +344,6 @@ namespace CLIParser
         prefix = _prefix;
         boundPrefix = _boundPrefix;
         flagTypes = &_flagsAndTypes;
-    }
-
-    void Parser::AddFlag(std::string&& flagName, FlagType flagType)
-    {
-        if (_dead)
-            Error("You can't use the CLIParser after parsing the flags and returning.\n", __LINE__);
-
-        flagName.insert(0, _prefix);
-
-        if (_flagsAndTypes.contains(flagName))
-            return;
-
-        _flagsAndTypes[flagName] = flagType;
-        _resultFlags[flagName].intVal = nullptr;
     }
 
     void Parser::BindFlag(std::string&& bindThis, std::string&& toThis)
