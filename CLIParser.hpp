@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include <string_view>
 #include <type_traits>
 #include <unordered_map>
 #include <string>
@@ -31,6 +31,7 @@ namespace CLIParser
         Bool = 6 
     };
 
+    // I love template magic
     template<typename T, FlagType F>
     concept flaggable = requires(){
         (F == FlagType::Bool && std::is_same_v<T, bool>);
@@ -56,14 +57,14 @@ namespace CLIParser
         >::type
     >::type;
 
-
     class Flags 
     {
+        friend class Parser;
+
         private:
             std::unordered_map<std::string, ReturnPtr> _flags;
             std::unordered_map<std::string, FlagType> _flagTypes;
 
-        public:
             Flags() = delete;
             Flags(Flags&) = delete;
 
@@ -72,7 +73,14 @@ namespace CLIParser
                 const std::unordered_map<std::string, FlagType>& flagTypesToSet,
                 const std::string_view prefix
             );
+
+        public:
             ~Flags();
+
+            struct FlagTuple {
+                const std::string_view flag;
+                const std::string_view binding;
+            };
 
             template<FlagType F>
                 requires flaggable<determineVType<F>, F>
