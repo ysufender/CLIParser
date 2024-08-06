@@ -218,30 +218,22 @@ namespace CLIParser
 
         for (const auto& [f, p] : _flags)
         {
-            switch (_flagTypes.at(f)) 
-            {
-                case FT::Int:
-                    delete p.intVal;
-                    break;
-                case FT::Bool:
-                    delete p.boolVal;
-                    break;
-                case FT::Float:
-                    delete p.floatVal;
-                    break;
-                case FT::String:
-                    delete p.stringVal;
-                    break;
-                case FT::IntList:
-                    delete p.intList;
-                    break;
-                case FT::FloatList:
-                    delete p.floatList;
-                    break;
-                case FT::StringList:
-                    delete p.stringList;
-                    break;
-            }
+            FT t { _flagTypes.at(f) };
+
+            if(t == FT::Int)
+                delete p.intVal;
+            if(t == FT::Bool)
+                delete p.boolVal;
+            if(t == FT::Float)
+                delete p.floatVal;
+            if(t == FT::String)
+                delete p.stringVal;
+            if(t == FT::IntList)
+                delete p.intList;
+            if(t == FT::FloatList)
+                delete p.floatList;
+            if(t == FT::StringList)
+                delete p.stringList;
         }
     }
 
@@ -249,8 +241,8 @@ namespace CLIParser
     //
     // CLIParser Implementation
     //
-    Parser::Parser(char** programCli, int count, std::string_view prefix) 
-        : _prefix(prefix), _boundPrefix(prefix) 
+    Parser::Parser(char** programCli, int count, std::string_view prefix)
+        : _prefix(prefix), _boundPrefix(prefix)
     {
         cliEntries = programCli;
         entryCount = count;
@@ -281,20 +273,6 @@ namespace CLIParser
                 return;
 
         boundFlags[bindThis] = toThis;
-    }
-
-    void Parser::RemoveFlag(std::string&& flagName)
-    {
-        if (_dead)
-            Error("You can't use the CLIParser after parsing the flags and returning.\n", __LINE__);
-
-        flagName.insert(0, _prefix);
-
-        if (!_flagsAndTypes.contains(flagName))
-            return;
-        
-        _flagsAndTypes.erase(flagName);
-        _resultFlags.erase(flagName);
     }
 
     const Flags Parser::Parse()

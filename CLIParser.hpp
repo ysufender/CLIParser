@@ -40,20 +40,16 @@ namespace CLIParser
         (F == FlagType::StringList&& std::is_same_v<T, std::vector<std::string>>);
         (F == FlagType::IntList && std::is_same_v<T, std::vector<int>>);
         (F == FlagType::FloatList && std::is_same_v<T, std::vector<float>>);
-        false;
     };
 
     // I'm so sorry...
     template<FlagType F>
-    using determineVType = typename std::conditional<
-        F == FlagType::Int, int,
+    using determineVType = typename std::conditional< F == FlagType::Int, int,
         typename std::conditional<F == FlagType::Bool, bool,
             typename std::conditional<F == FlagType::Float, float,
                 typename std::conditional<F == FlagType::String, std::string,
                     typename std::conditional<F == FlagType::IntList, std::vector<int>,
-                        typename std::conditional<F == FlagType::FloatList, std::vector<float>,
-                                std::vector<std::string>
-                        >::type
+                        typename std::conditional<F == FlagType::FloatList, std::vector<float>, std::vector<std::string>>::type
                     >::type
                 >::type
             >::type
@@ -67,8 +63,17 @@ namespace CLIParser
             std::unordered_map<std::string, ReturnPtr> _flags;
             std::unordered_map<std::string, FlagType> _flagTypes;
 
-        
         public:
+            Flags() = delete;
+            Flags(Flags&) = delete;
+
+            Flags(
+                const std::unordered_map<std::string, ReturnPtr>& flagsToSet,
+                const std::unordered_map<std::string, FlagType>& flagTypesToSet,
+                const std::string_view prefix
+            );
+            ~Flags();
+
             template<FlagType F>
                 requires flaggable<determineVType<F>, F>
             const determineVType<F>& GetFlag(const std::string& flagName) const
@@ -88,11 +93,11 @@ namespace CLIParser
                 return *reinterpret_cast<determineVType<F>*>(_flags.at(flagName).intVal);
             }
 
-            Flags() = delete;
-            Flags(Flags&) = delete;
-            Flags(const std::unordered_map<std::string, ReturnPtr>& flagsToSet, const std::unordered_map<std::string, FlagType>& flagTypesToSet, const std::string_view prefix);
-
-            ~Flags();
+        private:
+            void* operator new(size_t) = delete;
+            void* operator new(size_t, void*) = delete;
+            void* operator new[](size_t) = delete;
+            void* operator new[](size_t, void*) = delete;
     };
 
 
@@ -107,13 +112,19 @@ namespace CLIParser
             bool _dead = false;
         
         public:
-            Parser(char** programCli, int count, std::string_view prefix);
-            Parser(char** programCli, int count, std::string_view prefix, std::string&& boundPrefix);
             Parser() = delete;
             Parser(Parser&) = delete;
             Parser(Parser&&) = delete;
+
+            Parser(char** programCli, int count, std::string_view prefix);
+            Parser(
+                char** programCli,
+                int count,
+                std::string_view prefix,
+                std::string&& boundPrefix
+            );
+
             void BindFlag(std::string&& bindThis, std::string&& toThis);
-            void RemoveFlag(std::string&& flagName);
             const Flags Parse();
 
             template<FlagType F>
