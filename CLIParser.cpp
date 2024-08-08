@@ -1,5 +1,6 @@
 #include <array>
 #include <sstream>
+#include <functional>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -115,7 +116,8 @@ namespace CLIParser
 
         _boundFlags[bindThis] = toThis;
 
-        _flagDescriptions.at(toThis).bound = bindThis;
+        auto index { std::find_if(_flagDescriptions.begin(), _flagDescriptions.end(), [&toThis](const FlagDescription& fd){return fd.flag==toThis;}) - _flagDescriptions.begin() };
+        _flagDescriptions.at(index).bound = bindThis;
     }
 
     const Flags Parser::Parse()
@@ -146,17 +148,32 @@ namespace CLIParser
         return Flags{_resultFlags, _flagsAndTypes, _prefix, GetHelpText()};
     }
 
+    void Parser::Seperator()
+    {
+        std::stringstream ss;
+        ss << '%' << _flagDescriptions.size();
+        _flagDescriptions.emplace_back(ss.str(), "", "");
+    }
+
     const std::string Parser::GetHelpText() const
     {
         std::stringstream ss;
 
         ss << "\nAvailable Flags:";
 
-        for (const auto& [flag, description] : _flagDescriptions)
-            ss << "\n\t" << flag 
-               << ' ' << (Handlers::listType.contains(_flagsAndTypes.at(flag)) ? "<..params..>" : (_flagsAndTypes.at(flag) == FlagType::Bool ? "" : "<value>"))
-               << (description.bound.empty() ?  "" : ", ") 
-               << description.bound << " : " << description.description;
+        for (const auto& desc : _flagDescriptions)
+        {
+            if (desc.flag.starts_with("%"))
+            {
+                ss << '\n';
+                continue;
+            }
+
+            ss << "\n\t" << desc.flag 
+               << ' ' << (Handlers::listType.contains(_flagsAndTypes.at(desc.flag)) ? "<..params..>" : (_flagsAndTypes.at(desc.flag) == FlagType::Bool ? "" : "<value>"))
+               << (desc.bound.empty() ?  "" : ", ") 
+               << desc.bound << " : " << desc.description;
+        }
 
         return ss.str();
     }

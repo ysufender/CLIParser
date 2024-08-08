@@ -70,6 +70,7 @@ void Test3(int argc, char** args)
     parser.AddFlag<FlagType::String>("string1", "Some String Value");
     parser.AddFlag<FlagType::String>("string2", "Some Other String Value");
     parser.AddFlag<FlagType::String>("string3", "Defaulted string value", "Default Value");
+    parser.Seperator();
     parser.AddFlag<FlagType::String>("string4", "Binded String Value");
 
     parser.BindFlag("s4", "string4");

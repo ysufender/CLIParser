@@ -121,13 +121,14 @@ namespace CLIParser
     {
         private:
             struct FlagDescription {
+                std::string flag;
                 std::string bound;
                 std::string description;
             };
 
             std::unordered_map<std::string, ReturnPtr> _resultFlags;
             std::unordered_map<std::string, FlagType> _flagsAndTypes;
-            std::map<std::string, FlagDescription> _flagDescriptions;
+            std::vector<FlagDescription> _flagDescriptions;
             std::unordered_map<std::string, std::string> _boundFlags;
 
             const std::string_view _prefix;
@@ -151,6 +152,7 @@ namespace CLIParser
             void BindFlag(std::string&& bindThis, std::string&& toThis);
             const Flags Parse();
 
+            void Seperator();
             const std::string GetHelpText() const;
 
             template<FlagType F>
@@ -174,7 +176,7 @@ namespace CLIParser
 
                 _flagsAndTypes[flagName] = F;
                 _resultFlags[flagName] = val;
-                _flagDescriptions[flagName] = { "", description };
+                _flagDescriptions.emplace_back(flagName, "", description);
             }
 
         private:

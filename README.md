@@ -180,6 +180,48 @@ int main(int agrc, char** args)
 //            --string4, -s4 : Binded String Value
 ```
 
+## Creating Seperators
+
+You might want to group your flags in the auto-generated help text. `Parser` provides the `Parser.Seperator()` method for this purpose. Simply
+call this method where you want to place an empty line.
+
+```cpp
+#include "CLIParser.hpp"
+
+using namespace CLIParser;
+
+int main(int agrc, char** args)
+{
+    Parser parser { args, argc, "--", "-" };
+
+    parser.AddFlag<FlagType::String>("string1", "Some String Value");
+    parser.Seperator();
+    parser.AddFlag<FlagType::String>("string2", "Some Other String Value");
+    parser.AddFlag<FlagType::String>("string3", "Defaulted string value", "Default Value");
+    parser.Seperator();
+    parser.AddFlag<FlagType::String>("string4", "Binded String Value");
+
+    parser.BindFlag("s4", "string4");
+
+    Flags flags { parser.Parse() };
+
+    std::cout << "Debug CLI Usage:\n\tCLIParser <..flags..>\n";
+    std::cout << flags.GetHelpText() << '\n';
+}
+
+// OUTPUT:
+//    Debug CLI Usage:
+//            CLIParser <..flags..>
+//
+//    Available Flags:
+//            --string1 : Some String Value
+//
+//            --string2 : Some Other String Value
+//            --string3 : Defaulted string value
+//
+//            --string4, -s4 : Binded String Value
+```
+
 
 ## Default Values
 
