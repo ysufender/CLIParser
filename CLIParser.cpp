@@ -1,10 +1,9 @@
 #include <array>
+#include <sstream>
 #include <string>
 #include <string_view>
 
 #include "CLIParser.hpp"
-
-static std::unordered_map<std::string, std::string> boundFlags;
 
 static const bool errBool { false };
 static const int errInt { 0 };
@@ -35,8 +34,9 @@ namespace CLIParser
     Flags::Flags(
         const std::unordered_map<std::string, ReturnPtr>& flagsToSet,
         const std::unordered_map<std::string, FlagType>& flagTypesToSet,
-        const std::string_view prefix
-    )
+        const std::string_view prefix,
+        const std::string& description
+    ) : _description(description)
     {
         for (const auto& [flag, returnPtr] : flagsToSet)
         {
@@ -100,15 +100,20 @@ namespace CLIParser
     void Parser::BindFlag(std::string&& bindThis, std::string&& toThis)
     {
         if (_dead)
-            Handlers::Error("You can't use the CLIParser after parsing the flags and returning.\n", __LINE__);
+            Handlers::Error("You can't use the CLIParser after parsing the flags and returning.", __LINE__);
 
         bindThis.insert(0, _boundPrefix);
         toThis.insert(0, _prefix);
 
-        if (boundFlags.contains(bindThis))
+        if (!_resultFlags.contains(toThis))
+            Handlers::Error("You can't bind '"+bindThis+"' to the nonexistent flag '"+toThis+"'.", __LINE__);
+
+        if (_boundFlags.contains(bindThis))
                 return;
 
-        boundFlags[bindThis] = toThis;
+        _boundFlags[bindThis] = toThis;
+
+        _flagDescriptions.at(toThis).bound = bindThis;
     }
 
     const Flags Parser::Parse()
@@ -120,10 +125,10 @@ namespace CLIParser
         {
             const std::string& flag { Handlers::cliEntries[index] };
 
-            if (boundFlags.contains(flag))
+            if (_boundFlags.contains(flag))
             {
-                _flagsAndTypes[flag.data()] = _flagsAndTypes[boundFlags[flag.data()]];
-                _resultFlags[boundFlags[flag.data()]] = Handlers::CLIParamToObject(index);
+                _flagsAndTypes[flag.data()] = _flagsAndTypes[_boundFlags[flag.data()]];
+                _resultFlags[_boundFlags[flag.data()]] = Handlers::CLIParamToObject(index);
                 _flagsAndTypes.erase(flag.data());
 
                 continue;
@@ -136,6 +141,18 @@ namespace CLIParser
         }
 
         _dead = true;
-        return Flags{_resultFlags, _flagsAndTypes, _prefix};
+        return Flags{_resultFlags, _flagsAndTypes, _prefix, GetHelpText()};
+    }
+
+    const std::string Parser::GetHelpText() const
+    {
+        std::stringstream ss;
+
+        ss << "\nAvailable Flags:";
+
+        for (const auto& [flag, description] : _flagDescriptions)
+            ss << "\n\t" << flag << (description.bound.empty() ?  "" : ", ") << description.bound << " : " << description.description;
+
+        return ss.str();
     }
 }

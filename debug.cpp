@@ -43,13 +43,13 @@ void Test2(int argc, char** args)
 {
     Parser parser { args, argc, "--", "-" };
 
-    parser.AddFlag<FlagType::Bool>("b", true);
-    parser.AddFlag<FlagType::Int>("i", 42);
-    parser.AddFlag<FlagType::Float>("f", 87);
-    parser.AddFlag<FlagType::String>("s", "Testing Things");
-    parser.AddFlag<FlagType::StringList>("sl", { "Hello", "World" });
-    parser.AddFlag<FlagType::IntList>("il", { 5, 4, 32 });
-    parser.AddFlag<FlagType::FloatList>("fl", { 4.152, 87.785 });
+    parser.AddFlag<FlagType::Bool>("b", "Just a bool", true);
+    parser.AddFlag<FlagType::Int>("i", "A regular int", 42);
+    parser.AddFlag<FlagType::Float>("f", "Your friendly float",87);
+    parser.AddFlag<FlagType::String>("s", "Some string", "Testing Things");
+    parser.AddFlag<FlagType::StringList>("sl", "Cool. Why do they call this a vector?", { "Hello", "World" });
+    parser.AddFlag<FlagType::IntList>("il", "INTEGER LIST", { 5, 4, 32 });
+    parser.AddFlag<FlagType::FloatList>("fl", "FLOATSSS",{ 4.152f, 87.785f });
 
     Flags flags = parser.Parse();
 
@@ -63,11 +63,30 @@ void Test2(int argc, char** args)
     PrintForeach(flags.GetFlag<FlagType::FloatList>("fl"));
 }
 
+void Test3(int argc, char** args)
+{
+    Parser parser { args, argc, "--", "-" };
+
+    parser.AddFlag<FlagType::String>("string1", "Some String Value");
+    parser.AddFlag<FlagType::String>("string2", "Some Other String Value");
+    parser.AddFlag<FlagType::String>("string3", "Defaulted string value", "Default Value");
+    parser.AddFlag<FlagType::String>("string4", "Binded String Value");
+
+    parser.BindFlag("s4", "string4");
+
+    Flags flags { parser.Parse() };
+
+    std::cout << "Debug CLI Usage:\n\tCLIParser <..flags..>\n";
+    std::cout << flags.GetHelpText() << '\n';
+}
+
 int main(int argc, char** args)
 {	
     //Test1(argc, args);
     //std::cout << "\n\n";
-    Test2(argc, args);
+    //Test2(argc, args);
+    //std::cout << "\n\n";
+    Test3(argc, args);
 
 	return 1;
 }

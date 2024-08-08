@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <string_view>
 #include <type_traits>
 #include <unordered_map>
@@ -65,13 +66,16 @@ namespace CLIParser
             std::unordered_map<std::string, ReturnPtr> _flags;
             std::unordered_map<std::string, FlagType> _flagTypes;
 
+            const std::string _description;
+
             Flags() = delete;
             Flags(Flags&) = delete;
 
             Flags(
                 const std::unordered_map<std::string, ReturnPtr>& flagsToSet,
                 const std::unordered_map<std::string, FlagType>& flagTypesToSet,
-                const std::string_view prefix
+                const std::string_view prefix,
+                const std::string& description
             );
 
         public:
@@ -81,6 +85,8 @@ namespace CLIParser
                 const std::string_view flag;
                 const std::string_view binding;
             };
+
+            inline const std::string& GetHelpText() const { return _description; }
 
             template<FlagType F>
                 requires flaggable<determineVType<F>, F>
@@ -114,8 +120,16 @@ namespace CLIParser
     class Parser
     {
         private:
+            struct FlagDescription {
+                std::string bound;
+                std::string description;
+            };
+
             std::unordered_map<std::string, ReturnPtr> _resultFlags;
             std::unordered_map<std::string, FlagType> _flagsAndTypes;
+            std::unordered_map<std::string, FlagDescription> _flagDescriptions;
+            std::unordered_map<std::string, std::string> _boundFlags;
+
             const std::string_view _prefix;
             const std::string_view _boundPrefix;
 
@@ -137,9 +151,11 @@ namespace CLIParser
             void BindFlag(std::string&& bindThis, std::string&& toThis);
             const Flags Parse();
 
+            const std::string GetHelpText() const;
+
             template<FlagType F>
                 requires flaggable<determineVType<F>, F>
-            void AddFlag(std::string&& flagName, determineVType<F> defaultVal = determineVType<F>{}) 
+            void AddFlag(std::string&& flagName, const std::string& description = "", determineVType<F> defaultVal = determineVType<F>{}) 
             {
                 if (_dead)
                 {
@@ -158,6 +174,7 @@ namespace CLIParser
 
                 _flagsAndTypes[flagName] = F;
                 _resultFlags[flagName] = val;
+                _flagDescriptions[flagName] = { "", description };
             }
 
         private:
