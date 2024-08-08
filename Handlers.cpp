@@ -15,7 +15,7 @@ namespace Handlers
         FlagType::Float
     };
 
-    const std::unordered_set<FlagType> listType { 
+    extern const std::unordered_set<FlagType> listType { 
         FlagType::IntList,
         FlagType::FloatList,
         FlagType::StringList

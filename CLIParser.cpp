@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 
 #include "CLIParser.hpp"
 
@@ -20,6 +21,7 @@ namespace Handlers
     extern std::string_view prefix;
     extern std::string_view boundPrefix;
     extern std::unordered_map<std::string, CLIParser::FlagType>* flagTypes;
+    extern const std::unordered_set<CLIParser::FlagType> listType;
 
     void Error(const std::vector<std::string>& messages, int line);
     void Error(const std::string& message, int line);
@@ -151,7 +153,10 @@ namespace CLIParser
         ss << "\nAvailable Flags:";
 
         for (const auto& [flag, description] : _flagDescriptions)
-            ss << "\n\t" << flag << (description.bound.empty() ?  "" : ", ") << description.bound << " : " << description.description;
+            ss << "\n\t" << flag 
+               << ' ' << (Handlers::listType.contains(_flagsAndTypes.at(flag)) ? "<..params..>" : (_flagsAndTypes.at(flag) == FlagType::Bool ? "" : "<value>"))
+               << (description.bound.empty() ?  "" : ", ") 
+               << description.bound << " : " << description.description;
 
         return ss.str();
     }
