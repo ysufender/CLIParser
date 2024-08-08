@@ -15,8 +15,10 @@ void PrintForeach(const auto& container)
     std::cout << "]\n";
 }
 
-void AddF(Parser& parser)
+void Test1(int argc, char** args)
 {
+    Parser parser { args, argc, "--", "-" };
+
     parser.AddFlag<FlagType::Bool>("b");
     parser.AddFlag<FlagType::Int>("i");
     parser.AddFlag<FlagType::Float>("f");
@@ -24,12 +26,7 @@ void AddF(Parser& parser)
     parser.AddFlag<FlagType::StringList>("sl");
     parser.AddFlag<FlagType::IntList>("il");
     parser.AddFlag<FlagType::FloatList>("fl");
-}
 
-void Test1(int argc, char** args)
-{
-    Parser parser { args, argc, "--", "-" };
-    AddF(parser);
     Flags flags = parser.Parse();
 
     std::cout << "TEST 1\n";
@@ -45,7 +42,15 @@ void Test1(int argc, char** args)
 void Test2(int argc, char** args)
 {
     Parser parser { args, argc, "--", "-" };
-    AddF(parser);
+
+    parser.AddFlag<FlagType::Bool>("b", true);
+    parser.AddFlag<FlagType::Int>("i", 42);
+    parser.AddFlag<FlagType::Float>("f", 87);
+    parser.AddFlag<FlagType::String>("s", "Testing Things");
+    parser.AddFlag<FlagType::StringList>("sl", { "Hello", "World" });
+    parser.AddFlag<FlagType::IntList>("il", { 5, 4, 32 });
+    parser.AddFlag<FlagType::FloatList>("fl", { 4.152, 87.785 });
+
     Flags flags = parser.Parse();
 
     std::cout << "TEST 2\n";
@@ -62,8 +67,7 @@ int main(int argc, char** args)
 {	
     //Test1(argc, args);
     //std::cout << "\n\n";
-    //Test2(argc, args);
-    //std::cout << "\n\n";
+    Test2(argc, args);
 
 	return 1;
 }

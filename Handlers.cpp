@@ -1,6 +1,8 @@
 #include <array>
+#include <cstdlib>
 #include <sstream>
 #include <functional>
+#include <unordered_set>
 
 #include "CLIParser.hpp"
 
@@ -8,12 +10,12 @@ namespace Handlers
 {
     using namespace CLIParser;
 
-    const std::array<FlagType, 2> numTypes { 
+    const std::unordered_set<FlagType> numTypes { 
         FlagType::Int,
         FlagType::Float
     };
 
-    const std::array<FlagType, 3> listType { 
+    const std::unordered_set<FlagType> listType { 
         FlagType::IntList,
         FlagType::FloatList,
         FlagType::StringList
@@ -112,25 +114,27 @@ namespace Handlers
 
     ReturnPtr HandleCliNumber(int& index)
     {
-        if (std::find(numTypes.begin(), numTypes.end(), flagTypes->at(cliEntries[index])) == numTypes.end())
+        std::string entry = cliEntries[index];
+        
+        if (!numTypes.contains(flagTypes->at(entry)))
             Error({"Type missmatch. Given flag ", cliEntries[index], " is not a number."}, __LINE__);
 
         bool isFloat = false;
 
         index++;
-        std::string entry = cliEntries[index];
+        std::string val { cliEntries[index] };
         index++; // responsibility of the function.
 
-        if (entry.find_first_of('.') != std::string::npos)
-            return ReturnPtr { .floatVal = new float{std::stof(entry)} };
+        if (flagTypes->at(entry) == FlagType::Float)
+            return ReturnPtr { .floatVal = new float{std::stof(val)} };
         if (entry.starts_with("0x"))
-            return ReturnPtr { .intVal = new int{std::stoi(entry, 0, 16)} };
+            return ReturnPtr { .intVal = new int{std::stoi(val, 0, 16)} };
 
-        return ReturnPtr { .intVal = new int{std::stoi(entry)} };
+        return ReturnPtr { .intVal = new int{std::stoi(val)} };
     }
 
     ReturnPtr HandleCliString(int& index)
-    {	
+    {
         if (flagTypes->at(cliEntries[index]) != FlagType::String)
             Error({"Type missmatch. Given flag ", cliEntries[index], " is not a string."}, __LINE__);
 
@@ -145,14 +149,16 @@ namespace Handlers
         if (std::find(listType.begin(), listType.end(), flagTypes->at(flagName)) == listType.end())
             Error({"Type missmatch. Given flag ", flagName, " is not a list."}, __LINE__);
 
-        if (flagTypes->at(flagName) == FlagType::FloatList)
-            return HandleFloatList(index);
-        if (flagTypes->at(flagName) == FlagType::IntList)
-            return HandleIntList(index);
-        if (flagTypes->at(flagName) == FlagType::StringList)
-            return HandleStringList(index);
+        ReturnPtr rp;
 
-        return ReturnPtr {};
+        if (flagTypes->at(flagName) == FlagType::FloatList)
+            rp = HandleFloatList(index);
+        if (flagTypes->at(flagName) == FlagType::IntList)
+            rp = HandleIntList(index);
+        if (flagTypes->at(flagName) == FlagType::StringList)
+            rp = HandleStringList(index);
+
+        return rp;
     }
 
     ReturnPtr HandleCliBool(int& index)
@@ -166,9 +172,9 @@ namespace Handlers
         const std::string& flag { cliEntries[index] };
         const FlagType type { flagTypes->at(flag) };
 
-        if (std::find(numTypes.begin(), numTypes.end(), type) != numTypes.end())
+        if (numTypes.contains(type))
             return std::move(HandleCliNumber(index));
-        if (std::find(listType.begin(), listType.end(), type) != listType.end())
+        if (listType.contains(type))
             return std::move(HandleCliList(index));
         if (type == FlagType::String)
             return HandleCliString(index);

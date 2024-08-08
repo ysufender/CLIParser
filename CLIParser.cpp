@@ -18,6 +18,8 @@ namespace Handlers
 {
     extern char** cliEntries;
     extern int entryCount;
+    extern std::string_view prefix;
+    extern std::string_view boundPrefix;
     extern std::unordered_map<std::string, CLIParser::FlagType>* flagTypes;
 
     void Error(const std::vector<std::string>& messages, int line);
@@ -81,6 +83,8 @@ namespace CLIParser
         Handlers::cliEntries = programCli;
         Handlers::entryCount = count;
         Handlers::flagTypes = &_flagsAndTypes;
+        Handlers::prefix = _prefix;
+        Handlers::boundPrefix = _boundPrefix;
     }
 
     Parser::Parser(char** programCli, int count, std::string_view prefix, std::string&& boundPrefix)
@@ -89,6 +93,8 @@ namespace CLIParser
         Handlers::cliEntries = programCli;
         Handlers::entryCount = count;
         Handlers::flagTypes = &_flagsAndTypes;
+        Handlers::prefix = _prefix;
+        Handlers::boundPrefix = _boundPrefix;
     }
 
     void Parser::BindFlag(std::string&& bindThis, std::string&& toThis)
@@ -112,9 +118,9 @@ namespace CLIParser
 
         for (int index = 1; index < Handlers::entryCount;)
         {
-            const std::string_view flag { Handlers::cliEntries[index] };
+            const std::string& flag { Handlers::cliEntries[index] };
 
-            if (boundFlags.contains(flag.data()))
+            if (boundFlags.contains(flag))
             {
                 _flagsAndTypes[flag.data()] = _flagsAndTypes[boundFlags[flag.data()]];
                 _resultFlags[boundFlags[flag.data()]] = Handlers::CLIParamToObject(index);
@@ -123,13 +129,13 @@ namespace CLIParser
                 continue;
             }
 
-            if (!_resultFlags.contains(flag.data()))
-                Handlers::Error({"Given flag ", flag.data(), " has not been registered."}, __LINE__);
+            if (!_resultFlags.contains(flag))
+                Handlers::Error({"Given flag ", flag, " has not been registered."}, __LINE__);
                 
-            _resultFlags[flag.data()] = Handlers::CLIParamToObject(index);
+            _resultFlags[flag] = Handlers::CLIParamToObject(index);
         }
 
         _dead = true;
-        return Flags{std::move(_resultFlags), std::move(_flagsAndTypes), _prefix};
+        return Flags{_resultFlags, _flagsAndTypes, _prefix};
     }
 }

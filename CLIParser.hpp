@@ -98,7 +98,9 @@ namespace CLIParser
                     exit(1);
                 }
 
-                return *reinterpret_cast<determineVType<F>*>(_flags.at(flagName).intVal);
+                void* ptr { _flags.at(flagName).intVal };
+                const determineVType<F>& val { *reinterpret_cast<determineVType<F>*>(ptr) };
+                return val;
             }
 
         private:
@@ -137,7 +139,7 @@ namespace CLIParser
 
             template<FlagType F>
                 requires flaggable<determineVType<F>, F>
-            void AddFlag(std::string&& flagName, determineVType<F> defaultVal = determineVType<F>()) 
+            void AddFlag(std::string&& flagName, determineVType<F> defaultVal = determineVType<F>{}) 
             {
                 if (_dead)
                 {
@@ -150,8 +152,12 @@ namespace CLIParser
                 if (_flagsAndTypes.contains(flagName))
                     return;
 
+                ReturnPtr val { 
+                    .intVal = reinterpret_cast<int*>(new determineVType<F>{defaultVal})
+                };
+
                 _flagsAndTypes[flagName] = F;
-                _resultFlags[flagName].intVal = reinterpret_cast<int*>(new determineVType<F>{defaultVal});
+                _resultFlags[flagName] = val;
             }
 
         private:
