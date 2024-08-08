@@ -35,14 +35,14 @@ using namespace CLIParser;
 
 int main(int argc, char** args)
 {
-	Parser parser {args, argc, "--"};
-	parser.AddFlag<FlagType::Int>("i");
-	parser.AddFlag<FlagType::Float>("f");
-	parser.AddFlag<FlagType::String>("s");
-	parser.AddFlag<FlagType::Bool>("b");
-	parser.AddFlag<FlagType::IntList>("il");
-	parser.AddFlag<FlagType::FloatList>("fl");
-	parser.AddFlag<FlagType::StringList>("sl");
+    Parser parser {args, argc, "--"};
+    parser.AddFlag<FlagType::Int>("i");
+    parser.AddFlag<FlagType::Float>("f");
+    parser.AddFlag<FlagType::String>("s");
+    parser.AddFlag<FlagType::Bool>("b");
+    parser.AddFlag<FlagType::IntList>("il");
+    parser.AddFlag<FlagType::FloatList>("fl");
+    parser.AddFlag<FlagType::StringList>("sl");
 }
 ```
 
@@ -55,50 +55,27 @@ using namespace CLIParser;
 
 int main(int argc, char** args)
 {
-	Parser parser {args, argc, "--"};
-	parser.AddFlag<FlagType::Int>("i");
-	parser.AddFlag<FlagType::Float>("f");
-	parser.AddFlag<FlagType::String>("s");
-	parser.AddFlag<FlagType::Bool>("b");
-	parser.AddFlag<FlagType::IntList>("il");
-	parser.AddFlag<FlagType::FloatList>("fl");
-	parser.AddFlag<FlagType::StringList>("sl");
+    Parser parser {args, argc, "--"};
+    parser.AddFlag<FlagType::Int>("i");
+    parser.AddFlag<FlagType::Float>("f");
+    parser.AddFlag<FlagType::String>("s");
+    parser.AddFlag<FlagType::Bool>("b");
+    parser.AddFlag<FlagType::IntList>("il");
+    parser.AddFlag<FlagType::FloatList>("fl");
+    parser.AddFlag<FlagType::StringList>("sl");
 
-	Flags flags = parser.Parse();
-	int i = flags.GetFlag<FlagType::Int>("i");
-	float f = flags.GetFlag<FlagType::Float>("f");
-	std::string s = flags.GetFlag<FlagType::String>("s");
-	bool b = flags.GetFlag<FlagType::Bool>("b");
-	std::vector<int> = flags.GetFlag<FlagType::IntList>("il");
-	std::vector<float> = flags.GetFlag<FlagType::FloatList>("fl");
-	std::vector<string> = flags.GetFlag<FlagType::StringList>("sl");
+    Flags flags = parser.Parse();
+    int i = flags.GetFlag<FlagType::Int>("i");
+    float f = flags.GetFlag<FlagType::Float>("f");
+    std::string s = flags.GetFlag<FlagType::String>("s");
+    bool b = flags.GetFlag<FlagType::Bool>("b");
+    std::vector<int> = flags.GetFlag<FlagType::IntList>("il");
+    std::vector<float> = flags.GetFlag<FlagType::FloatList>("fl");
+    std::vector<string> = flags.GetFlag<FlagType::StringList>("sl");
 }
 ```
 
 Be aware that with this way, all the flags will be set to the default constructed values of their types. If you want to specify a default value, see the next header.
-
-
-## Default Values
-
-Specifying default values is easy, just add the value as another argument to `AddFlag` method. The template metaprogramming dark magic will handle the rest.
-
-```cpp
-#include "CLIParser.hpp"
-
-using namespace CLIParser;
-
-int main(int argc, char** args)
-{
-	Parser parser {args, argc, "--"};
-	parser.AddFlag<FlagType::String>("someStr", "Yeah, defaults...");
-
-    Flags flags = parser.Parse();
-
-    std::cout << flags.GetFlag<FlagType::String>("someStr") << '\n';
-}
-
-// Outputs 'Yeah, defaults...' if not value is provided in CLI.
-```
 
 
 ## Binding Flags
@@ -113,9 +90,9 @@ using namespace CLIParser;
 
 int main(int argc, char** args)
 {
-	Parser parser {args, argc, "--"};
-	parser.AddFlag<FlagType::Bool>("help");
-	parser.BindFlag("h", "help");
+    Parser parser {args, argc, "--"};
+    parser.AddFlag<FlagType::Bool>("help");
+    parser.BindFlag("h", "help");
 }
 ```
 
@@ -130,14 +107,14 @@ using namespace CLIParser;
 
 int main(int argc, char** args)
 {
-	Parser parser {args, argc, "--"};
-	parser.AddFlag<FlagType::Bool>("help");
-	parser.BindFlag("h", "help");
+    Parser parser {args, argc, "--"};
+    parser.AddFlag<FlagType::Bool>("help");
+    parser.BindFlag("h", "help");
 
-	Flags flags = parser.Parse();
-	bool help = flags.GetFlag<FlagType::Bool>("help");
+    Flags flags = parser.Parse();
+    bool help = flags.GetFlag<FlagType::Bool>("help");
 
-	std::cout <<  "This shall print one if help is needed: " << help << '\n';
+    std::cout <<  "This shall print one if help is needed: " << help << '\n';
 }
 ```
 
@@ -159,13 +136,74 @@ int main(int argc, char** args)
 
     Flags flags = parser.Parse();
     bool help = flags.GetFlag<FlagType::Bool>("help");
-	std::cout <<  "This shall print one if help is needed: " << help << '\n';
+    std::cout <<  "This shall print one if help is needed: " << help << '\n';
 }
 ```
 
 Now the `-h` is bound to `--help` instead of `--h`. Pretty neat huh? (Just say yes)
 
-  
+
+## Automatic Help Text Generation
+
+As you add and bind flags, the `Parser` will configure an `Available Flags: ...` text for you.
+
+```cpp
+#include "CLIParser.hpp"
+
+using namespace CLIParser;
+
+int main(int agrc, char** args)
+{
+    Parser parser { args, argc, "--", "-" };
+
+    parser.AddFlag<FlagType::String>("string1", "Some String Value");
+    parser.AddFlag<FlagType::String>("string2", "Some Other String Value");
+    parser.AddFlag<FlagType::String>("string3", "Defaulted string value", "Default Value");
+    parser.AddFlag<FlagType::String>("string4", "Binded String Value");
+
+    parser.BindFlag("s4", "string4");
+
+    Flags flags { parser.Parse() };
+
+    std::cout << "Debug CLI Usage:\n\tCLIParser <..flags..>\n";
+    std::cout << flags.GetHelpText() << '\n';
+}
+
+// OUTPUT:
+//    Debug CLI Usage:
+//            CLIParser <..flags..>
+//
+//    Available Flags:
+//            --string1 : Some String Value
+//            --string2 : Some Other String Value
+//            --string3 : Defaulted string value
+//            --string4, -s4 : Binded String Value
+```
+
+
+## Default Values
+
+Specifying default values is easy, just add the value as another argument to `AddFlag` method. The template metaprogramming dark magic will handle the rest.
+
+```cpp
+#include "CLIParser.hpp"
+
+using namespace CLIParser;
+
+int main(int argc, char** args)
+{
+    Parser parser {args, argc, "--"};
+    parser.AddFlag<FlagType::String>("someStr", "","Yeah, defaults...");
+
+    Flags flags = parser.Parse();
+
+    std::cout << flags.GetFlag<FlagType::String>("someStr") << '\n';
+}
+
+// Outputs 'Yeah, defaults...' if no value is provided in CLI.
+```
+
+
 ## Passing Conventions
 
 As for primitives:
@@ -203,7 +241,3 @@ A: One day, I was sleeping. But Jesus, what a sleep! Then a pigeon came and said
 
 NQ: Please stop writing READMEs. \
 A: Nah.
-
-## TODO
-
-Somehow I broke everything. I can't pass values to flags from CLI

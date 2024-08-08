@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sstream>
+#include <map>
 #include <string_view>
 #include <type_traits>
 #include <unordered_map>
@@ -127,7 +127,7 @@ namespace CLIParser
 
             std::unordered_map<std::string, ReturnPtr> _resultFlags;
             std::unordered_map<std::string, FlagType> _flagsAndTypes;
-            std::unordered_map<std::string, FlagDescription> _flagDescriptions;
+            std::map<std::string, FlagDescription> _flagDescriptions;
             std::unordered_map<std::string, std::string> _boundFlags;
 
             const std::string_view _prefix;
