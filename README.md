@@ -12,7 +12,7 @@ then you can either use
 
 `./build.ps1` or `./build.sh`
 
-and create an executable named `CLIParser.exe` at `build/Debug` to try it out by using `debug.cpp`
+and create an executable named `CLIParser.exe`, which contains the entry point defined in `debug.cpp` for you to test things after modifying the source,
 
 or you can do
 
