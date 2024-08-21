@@ -69,9 +69,9 @@ int main(int argc, char** args)
     float f = flags.GetFlag<FlagType::Float>("f");
     std::string s = flags.GetFlag<FlagType::String>("s");
     bool b = flags.GetFlag<FlagType::Bool>("b");
-    std::vector<int> = flags.GetFlag<FlagType::IntList>("il");
-    std::vector<float> = flags.GetFlag<FlagType::FloatList>("fl");
-    std::vector<string> = flags.GetFlag<FlagType::StringList>("sl");
+    std::vector<int> il = flags.GetFlag<FlagType::IntList>("il");
+    std::vector<float> fl = flags.GetFlag<FlagType::FloatList>("fl");
+    std::vector<string> sl = flags.GetFlag<FlagType::StringList>("sl");
 }
 ```
 
@@ -114,7 +114,7 @@ int main(int argc, char** args)
     Flags flags = parser.Parse();
     bool help = flags.GetFlag<FlagType::Bool>("help");
 
-    std::cout <<  "This shall print one if help is needed: " << help << '\n';
+    std::cout <<  "Help needed: " << std::boolalpha << help << '\n';
 }
 ```
 
@@ -136,7 +136,7 @@ int main(int argc, char** args)
 
     Flags flags = parser.Parse();
     bool help = flags.GetFlag<FlagType::Bool>("help");
-    std::cout <<  "This shall print one if help is needed: " << help << '\n';
+    std::cout <<  "Help needed: " << std::boolalpha << help << '\n';
 }
 ```
 
