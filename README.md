@@ -180,9 +180,9 @@ int main(int agrc, char** args)
 //            --string4, -s4 : Binded String Value
 ```
 
-## Creating Seperators
+## Creating Separators
 
-You might want to group your flags in the auto-generated help text. `Parser` provides the `Parser.Seperator()` method for this purpose. Simply
+You might want to group your flags in the auto-generated help text. `Parser` provides the `Parser.Separator()` method for this purpose. Simply
 call this method where you want to place an empty line.
 
 ```cpp
@@ -195,10 +195,10 @@ int main(int agrc, char** args)
     Parser parser { args, argc, "--", "-" };
 
     parser.AddFlag<FlagType::String>("string1", "Some String Value");
-    parser.Seperator();
+    parser.Separator();
     parser.AddFlag<FlagType::String>("string2", "Some Other String Value");
     parser.AddFlag<FlagType::String>("string3", "Defaulted string value", "Default Value");
-    parser.Seperator();
+    parser.Separator();
     parser.AddFlag<FlagType::String>("string4", "Binded String Value");
 
     parser.BindFlag("s4", "string4");

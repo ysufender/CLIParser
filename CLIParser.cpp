@@ -1,6 +1,5 @@
 #include <array>
 #include <sstream>
-#include <functional>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -148,7 +147,7 @@ namespace CLIParser
         return Flags{_resultFlags, _flagsAndTypes, _prefix, GetHelpText()};
     }
 
-    void Parser::Seperator()
+    void Parser::Separator()
     {
         std::stringstream ss;
         ss << '%' << _flagDescriptions.size();

@@ -152,7 +152,7 @@ namespace CLIParser
             void BindFlag(std::string&& bindThis, std::string&& toThis);
             const Flags Parse();
 
-            void Seperator();
+            void Separator();
             const std::string GetHelpText() const;
 
             template<FlagType F>
