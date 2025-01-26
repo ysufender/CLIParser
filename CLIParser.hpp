@@ -171,11 +171,11 @@ namespace CLIParser
                     return;
 
                 ReturnPtr val { 
-                    .intVal = reinterpret_cast<int*>(new determineVType<F>{defaultVal})
+                    .intVal = reinterpret_cast<int*>(new determineVType<F>{std::move(defaultVal)})
                 };
 
-                _flagsAndTypes[flagName] = F;
-                _resultFlags[flagName] = val;
+                _flagsAndTypes.emplace(flagName, F);
+                _resultFlags.emplace(flagName, val);
                 _flagDescriptions.emplace_back(flagName, "", description);
             }
 

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <ios>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -31,6 +32,24 @@ namespace Handlers
 
 namespace CLIParser
 {
+    static void DeallocReturnPtr(FlagType type, ReturnPtr ptr)
+    {
+        if(type == FlagType::Int)
+            delete ptr.intVal;
+        if(type == FlagType::Bool)
+            delete ptr.boolVal;
+        if(type == FlagType::Float)
+            delete ptr.floatVal;
+        if(type == FlagType::String)
+            delete ptr.stringVal;
+        if(type == FlagType::IntList)
+            delete ptr.intList;
+        if(type == FlagType::FloatList)
+            delete ptr.floatList;
+        if(type == FlagType::StringList)
+            delete ptr.stringList;
+    }
+
     //
     // Flags Implementation
     //
@@ -53,26 +72,10 @@ namespace CLIParser
 
     Flags::~Flags()
     {
-        using FT = CLIParser::FlagType;
-
         for (const auto& [f, p] : _flags)
         {
-            FT t { _flagTypes.at(f) };
-
-            if(t == FT::Int)
-                delete p.intVal;
-            if(t == FT::Bool)
-                delete p.boolVal;
-            if(t == FT::Float)
-                delete p.floatVal;
-            if(t == FT::String)
-                delete p.stringVal;
-            if(t == FT::IntList)
-                delete p.intList;
-            if(t == FT::FloatList)
-                delete p.floatList;
-            if(t == FT::StringList)
-                delete p.stringList;
+            FlagType t { _flagTypes.at(f) };
+            DeallocReturnPtr(t, p);
         }
     }
 
@@ -132,6 +135,7 @@ namespace CLIParser
             if (_boundFlags.contains(flag))
             {
                 _flagsAndTypes[flag.data()] = _flagsAndTypes[_boundFlags[flag.data()]];
+                DeallocReturnPtr(_flagsAndTypes.at(flag.data()), _resultFlags.at(_boundFlags.at(flag.data())));
                 _resultFlags[_boundFlags[flag.data()]] = Handlers::CLIParamToObject(index);
                 _flagsAndTypes.erase(flag.data());
 
@@ -140,7 +144,8 @@ namespace CLIParser
 
             if (!_resultFlags.contains(flag))
                 Handlers::Error({"Given flag ", flag, " has not been registered."}, __LINE__);
-                
+
+            DeallocReturnPtr(_flagsAndTypes.at(flag.data()), _resultFlags.at(flag.data()));
             _resultFlags[flag] = Handlers::CLIParamToObject(index);
         }
 
