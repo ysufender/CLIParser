@@ -6,7 +6,7 @@ A simple CLI parser. Simple data types and simple operations are allowed, for si
 
 Simply clone the repository by
 
-`git clone https://github.com/The2ndSlimShady/CLIParser.git`
+`git clone https://github.com/ysufender/CLIParser.git`
 
 then you can either use
 
