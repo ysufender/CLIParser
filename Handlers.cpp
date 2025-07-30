@@ -1,4 +1,3 @@
-#include <array>
 #include <cstdlib>
 #include <sstream>
 #include <functional>
@@ -69,7 +68,7 @@ namespace Handlers
             }
         }
 
-        return ReturnPtr{ .intList = resultVec };
+        return ReturnPtr{ resultVec };
     }
 
     ReturnPtr HandleFloatList(int& index)
@@ -91,7 +90,7 @@ namespace Handlers
             }
         }
 
-        return ReturnPtr{ .floatList = resultVec };
+        return ReturnPtr{ resultVec };
     }
 
     ReturnPtr HandleStringList(int& index)
@@ -109,7 +108,7 @@ namespace Handlers
             resultVec->emplace_back(entry.data());
         }
 
-        return ReturnPtr{ .stringList = resultVec };
+        return ReturnPtr{ resultVec };
     }
 
     ReturnPtr HandleCliNumber(int& index)
@@ -126,11 +125,11 @@ namespace Handlers
         index++; // responsibility of the function.
 
         if (flagTypes->at(entry) == FlagType::Float)
-            return ReturnPtr { .floatVal = new float{std::stof(val)} };
+            return ReturnPtr { new float{std::stof(val)} };
         if (entry.starts_with("0x"))
-            return ReturnPtr { .intVal = new int{std::stoi(val, 0, 16)} };
+            return ReturnPtr { new int{std::stoi(val, 0, 16)} };
 
-        return ReturnPtr { .intVal = new int{std::stoi(val)} };
+        return ReturnPtr { new int{std::stoi(val)} };
     }
 
     ReturnPtr HandleCliString(int& index)
@@ -139,7 +138,7 @@ namespace Handlers
             Error({"Type missmatch. Given flag ", cliEntries[index], " is not a string."}, __LINE__);
 
         // I'm sorry. Please don't kill m)e
-        return ReturnPtr { .stringVal = new std::string{cliEntries[(++index)++]} };
+        return ReturnPtr { new std::string{cliEntries[(++index)++]} };
     }
 
     ReturnPtr HandleCliList(int& index)
@@ -164,7 +163,7 @@ namespace Handlers
     ReturnPtr HandleCliBool(int& index)
     {
         index++;
-        return ReturnPtr { .boolVal = new bool{true} };
+        return ReturnPtr { new bool{true} };
     }
 
     ReturnPtr CLIParamToObject(int& index)
@@ -186,5 +185,3 @@ namespace Handlers
         return ReturnPtr{};
     }
 }
-
-

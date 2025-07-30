@@ -1,6 +1,4 @@
 #include <algorithm>
-#include <array>
-#include <ios>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -35,19 +33,19 @@ namespace CLIParser
     static void DeallocReturnPtr(FlagType type, ReturnPtr ptr)
     {
         if(type == FlagType::Int)
-            delete ptr.intVal;
+            delete reinterpret_cast<int*>(ptr);
         if(type == FlagType::Bool)
-            delete ptr.boolVal;
+            delete reinterpret_cast<bool*>(ptr);
         if(type == FlagType::Float)
-            delete ptr.floatVal;
+            delete reinterpret_cast<float*>(ptr);
         if(type == FlagType::String)
-            delete ptr.stringVal;
+            delete reinterpret_cast<std::string*>(ptr);
         if(type == FlagType::IntList)
-            delete ptr.intList;
+            delete reinterpret_cast<std::vector<int>*>(ptr);
         if(type == FlagType::FloatList)
-            delete ptr.floatList;
+            delete reinterpret_cast<std::vector<float>*>(ptr);
         if(type == FlagType::StringList)
-            delete ptr.stringList;
+            delete reinterpret_cast<std::vector<std::string>*>(ptr);
     }
 
     //
@@ -57,7 +55,7 @@ namespace CLIParser
         const std::unordered_map<std::string, ReturnPtr>& flagsToSet,
         const std::unordered_map<std::string, FlagType>& flagTypesToSet,
         const std::string_view prefix,
-        const std::string& description
+        const std::string_view description
     ) : _description(description)
     {
         for (const auto& [flag, returnPtr] : flagsToSet)
@@ -93,7 +91,7 @@ namespace CLIParser
         Handlers::boundPrefix = _boundPrefix;
     }
 
-    Parser::Parser(char** programCli, int count, std::string_view prefix, std::string&& boundPrefix)
+    Parser::Parser(char** programCli, int count, std::string_view prefix, std::string_view boundPrefix)
         : _prefix(prefix), _boundPrefix(boundPrefix)
     {
         Handlers::cliEntries = programCli;

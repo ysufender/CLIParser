@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <string_view>
 #include <type_traits>
 #include <unordered_map>
@@ -10,16 +9,7 @@
 
 namespace CLIParser 
 {
-    union ReturnPtr
-    {
-        bool* boolVal;
-        int* intVal;
-        float* floatVal;
-        std::string* stringVal;
-        std::vector<std::string>* stringList;
-        std::vector<int>* intList;
-        std::vector<float>* floatList;
-    };
+    using ReturnPtr = void*;
 
     enum class FlagType
     {
@@ -75,7 +65,7 @@ namespace CLIParser
                 const std::unordered_map<std::string, ReturnPtr>& flagsToSet,
                 const std::unordered_map<std::string, FlagType>& flagTypesToSet,
                 const std::string_view prefix,
-                const std::string& description
+                const std::string_view description
             );
 
         public:
@@ -104,9 +94,7 @@ namespace CLIParser
                     exit(1);
                 }
 
-                void* ptr { _flags.at(flagName).intVal };
-                const determineVType<F>& val { *reinterpret_cast<determineVType<F>*>(ptr) };
-                return val;
+                return *reinterpret_cast<determineVType<F>*>(_flags.at(flagName));
             }
 
         private:
@@ -146,7 +134,7 @@ namespace CLIParser
                 char** programCli,
                 int count,
                 std::string_view prefix,
-                std::string&& boundPrefix
+                std::string_view boundPrefix
             );
 
             void BindFlag(std::string&& bindThis, std::string&& toThis);
@@ -170,12 +158,8 @@ namespace CLIParser
                 if (_flagsAndTypes.contains(flagName))
                     return;
 
-                ReturnPtr val { 
-                    .intVal = reinterpret_cast<int*>(new determineVType<F>{std::move(defaultVal)})
-                };
-
                 _flagsAndTypes.emplace(flagName, F);
-                _resultFlags.emplace(flagName, val);
+                _resultFlags.emplace(flagName, new determineVType<F>{std::move(defaultVal)});
                 _flagDescriptions.emplace_back(flagName, "", description);
             }
 
