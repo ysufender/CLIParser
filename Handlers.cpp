@@ -146,7 +146,7 @@ namespace Handlers
         std::string flagName = cliEntries[index];
 
         //if (std::find(listType.begin(), listType.end(), flagTypes->at(flagName)) == listType.end())
-        if (listType.contains(flagTypes->at(flagName)))
+        if (!listType.contains(flagTypes->at(flagName)))
             Error({"Type missmatch. Given flag ", flagName, " is not a list."}, __LINE__);
 
         ReturnPtr rp;
